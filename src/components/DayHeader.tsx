@@ -67,6 +67,9 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
       }}
       style={{
         backgroundColor: day.isOffDay ? '#EFEBE2' : isOver ? '#EBF2ED' : '#F5F1E9',
+        backgroundImage: day.isOffDay && !isOver
+          ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(215, 206, 192, 0.22) 10px, rgba(215, 206, 192, 0.22) 11px)'
+          : 'none',
         borderBottom: '1px solid #E5E0D6',
         borderLeft: isRightColumn ? '1px solid #E5E0D6' : 'none',
         borderRight: !isRightColumn ? '1px solid #E5E0D6' : 'none',
@@ -96,26 +99,7 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
             }}
           />
 
-          {/* Initial solid circle avatar */}
-          <Box
-            sx={{
-              width: 22,
-              height: 22,
-              borderRadius: '6px',
-              backgroundColor: day.isOffDay ? '#DCD6CB' : '#5B7065',
-              color: day.isOffDay ? '#556058' : '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '11px',
-              fontWeight: 700,
-              flexShrink: 0,
-            }}
-          >
-            {day.name.charAt(0)}
-          </Box>
-
-          <Box sx={{ minWidth: 0 }}>
+          <Box sx={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: 0.2 }}>
             <Typography
               variant="body2"
               sx={{
@@ -128,21 +112,24 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
                 whiteSpace: 'nowrap',
               }}
             >
-              {day.shortName || day.name}
+              {day.name}
             </Typography>
             {day.isOffDay && (
               <Box
                 sx={{
-                  display: 'inline-block',
-                  fontSize: '9px',
-                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  fontSize: '8.5px',
+                  fontWeight: 800,
+                  letterSpacing: '0.05em',
                   textTransform: 'uppercase',
-                  color: '#68726A',
-                  backgroundColor: '#E2DCD1',
-                  px: 0.75,
+                  color: '#766F64',
+                  backgroundColor: '#E7E1D6',
+                  border: '1px solid #D9D2C5',
+                  px: 0.6,
                   py: 0.1,
                   borderRadius: '4px',
-                  mt: 0.25,
+                  width: 'fit-content',
                 }}
               >
                 Off Day

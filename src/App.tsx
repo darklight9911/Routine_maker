@@ -266,34 +266,7 @@ export function App() {
             />
           </Box>
 
-          {/* Footer */}
-          <Box
-            className="no-print"
-            sx={{
-              mt: 2,
-              pt: 1.5,
-              borderTop: '1px solid #EAE6DF',
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 1,
-              fontSize: '11px',
-              color: '#747C76',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#4A534C' }}>
-                RoutineCraft
-              </Typography>
-            </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="caption" sx={{ color: '#8C948D' }}>
-                <kbd style={{ padding: '1px 4px', borderRadius: '3px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Z</kbd> / <kbd style={{ padding: '1px 4px', borderRadius: '3px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Y</kbd>
-              </Typography>
-            </Box>
-          </Box>
         </Container>
 
         {/* Modals & Drawers */}

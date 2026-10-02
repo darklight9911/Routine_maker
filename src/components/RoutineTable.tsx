@@ -306,6 +306,7 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
                       key={`${day.id}_${slot.id}`}
                       dayId={day.id}
                       timeSlotId={slot.id}
+                      isOffDay={!!day.isOffDay}
                       items={cellItems}
                       settings={routine.settings}
                       dragState={dragState}
@@ -332,7 +333,7 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
                     borderBottom: '1px solid #F0ECE4',
                     borderLeft: isRightDayCol ? 'none' : '1px solid #F0ECE4',
                     borderRight: isRightDayCol ? '1px solid #F0ECE4' : 'none',
-                    backgroundColor: '#FCFAF7',
+                    backgroundColor: day.isOffDay ? '#F7F4EE' : '#FCFAF7',
                     textAlign: 'center',
                     verticalAlign: 'middle',
                   }}

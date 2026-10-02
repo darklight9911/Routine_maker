@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 interface RoutineCellProps {
   dayId: string;
   timeSlotId: string;
+  isOffDay?: boolean;
   item?: RoutineItem | null;
   items?: RoutineItem[];
   settings: RoutineSettings;
@@ -27,6 +28,7 @@ interface RoutineCellProps {
 export const RoutineCell: React.FC<RoutineCellProps> = ({
   dayId,
   timeSlotId,
+  isOffDay = false,
   item,
   items,
   settings,
@@ -93,7 +95,12 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
             : isDayDragging
             ? '#F4EFEB'
             : '#EBF2ED'
+          : isOffDay
+          ? '#FAF7F2'
           : '#FFFFFF',
+        backgroundImage: isOffDay && !isOver
+          ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(215, 206, 192, 0.16) 10px, rgba(215, 206, 192, 0.16) 11px)'
+          : 'none',
         outline: isOver ? '2px solid #5B7065' : 'none',
         outlineOffset: '-2px',
         transition: 'background-color 0.15s ease',
@@ -146,8 +153,8 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
             minHeight: '60px',
             borderRadius: '10px',
             border: '1px dashed',
-            borderColor: isOver ? '#5B7065' : isRoutineItemDragging ? '#A4B8AB' : '#E8E3DA',
-            backgroundColor: isOver ? '#E2EBE5' : isRoutineItemDragging ? '#F4F8F5' : 'transparent',
+            borderColor: isOver ? '#5B7065' : isRoutineItemDragging ? '#A4B8AB' : isOffDay ? '#E0DACF' : '#E8E3DA',
+            backgroundColor: isOver ? '#E2EBE5' : isRoutineItemDragging ? '#F4F8F5' : isOffDay ? 'rgba(255,255,255,0.45)' : 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -164,7 +171,7 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
             },
           }}
         >
-          <AddIcon className="add-icon" sx={{ fontSize: 16, color: '#C5BEB4', transition: 'all 0.15s ease' }} />
+          <AddIcon className="add-icon" sx={{ fontSize: 15, color: isOffDay ? '#B5ADA1' : '#C5BEB4', transition: 'all 0.15s ease' }} />
         </Box>
       )}
     </td>
