@@ -17,8 +17,14 @@ export function useRoutine() {
       };
     });
 
+    const cleanedItems = (loaded.items || []).map((it) => ({
+      ...it,
+      title: it.title.replace(/\s*\(Copy\)\s*$/i, '').trim(),
+    }));
+
     return {
       ...loaded,
+      items: cleanedItems,
       timeSlots: cleanedSlots,
       settings: {
         ...loaded.settings,
@@ -135,10 +141,50 @@ export function useRoutine() {
     const itemToClone = routine.items.find((it) => it.id === itemId);
     if (!itemToClone) return;
     pushHistory(routine);
+
+    // Look for target slot:
+    // 1. Try subsequent days in the same time slot
+    // 2. Or next available empty slot in the routine
+    // 3. If none empty, keep same cell
+    const occupied = new Set(routine.items.map((it) => `${it.dayId}_${it.timeSlotId}`));
+    const dayIdx = routine.days.findIndex((d) => d.id === itemToClone.dayId);
+
+    let targetDayId = itemToClone.dayId;
+    let targetSlotId = itemToClone.timeSlotId;
+    let found = false;
+
+    // Check subsequent days for the same time slot
+    for (let i = 1; i < routine.days.length; i++) {
+      const nextDay = routine.days[(dayIdx + i) % routine.days.length];
+      if (!occupied.has(`${nextDay.id}_${itemToClone.timeSlotId}`)) {
+        targetDayId = nextDay.id;
+        targetSlotId = itemToClone.timeSlotId;
+        found = true;
+        break;
+      }
+    }
+
+    // If not found on same slot, check any empty non-break slot
+    if (!found) {
+      for (const day of routine.days) {
+        for (const slot of routine.timeSlots) {
+          if (!slot.isBreak && !occupied.has(`${day.id}_${slot.id}`)) {
+            targetDayId = day.id;
+            targetSlotId = slot.id;
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+    }
+
     const cloned: RoutineItem = {
       ...itemToClone,
       id: `item-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      title: `${itemToClone.title} (Copy)`,
+      dayId: targetDayId,
+      timeSlotId: targetSlotId,
+      title: itemToClone.title, // Keep clean identical title without (Copy)
     };
     setRoutine((prev) => ({
       ...prev,

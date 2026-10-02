@@ -134,9 +134,12 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
   }
 
   // Pre-index items by `${dayId}_${timeSlotId}` for instant lookup
-  const itemsMap = new Map<string, RoutineItem>();
+  const itemsMap = new Map<string, RoutineItem[]>();
   routine.items.forEach((item) => {
-    itemsMap.set(`${item.dayId}_${item.timeSlotId}`, item);
+    const key = `${item.dayId}_${item.timeSlotId}`;
+    const list = itemsMap.get(key) || [];
+    list.push(item);
+    itemsMap.set(key, list);
   });
 
   return (
@@ -296,13 +299,13 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
                     );
                   }
 
-                  const cellItem = itemsMap.get(`${day.id}_${slot.id}`);
+                  const cellItems = itemsMap.get(`${day.id}_${slot.id}`) || [];
                   return (
                     <RoutineCell
                       key={`${day.id}_${slot.id}`}
                       dayId={day.id}
                       timeSlotId={slot.id}
-                      item={cellItem}
+                      items={cellItems}
                       settings={routine.settings}
                       dragState={dragState}
                       onDragStartItem={onDragStartItem}

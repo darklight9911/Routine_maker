@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
 interface RoutineCellProps {
   dayId: string;
   timeSlotId: string;
-  item?: RoutineItem;
+  item?: RoutineItem | null;
+  items?: RoutineItem[];
   settings: RoutineSettings;
   dragState: DragState;
   onDragStartItem: (itemId: string, dayId: string, timeSlotId: string) => void;
@@ -27,6 +28,7 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   dayId,
   timeSlotId,
   item,
+  items,
   settings,
   dragState,
   onDragStartItem,
@@ -43,28 +45,11 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
 }) => {
   const [isOver, setIsOver] = useState(false);
 
+  const cellItems: RoutineItem[] = items && items.length > 0 ? items : item ? [item] : [];
+
   const isRoutineItemDragging = dragState.type === 'routine-item';
   const isTimeSlotDragging = dragState.type === 'time-slot' && dragState.sourceId !== timeSlotId;
   const isDayDragging = dragState.type === 'day-row' && dragState.sourceId !== dayId;
-  const isThisItemDragging = isRoutineItemDragging && dragState.sourceId === item?.id;
-
-  // Filter check
-  let isHighlighted = true;
-  if (item) {
-    if (searchFilter.trim()) {
-      const q = searchFilter.toLowerCase();
-      const match =
-        item.title.toLowerCase().includes(q) ||
-        (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
-        (item.instructor && item.instructor.toLowerCase().includes(q)) ||
-        (item.location && item.location.toLowerCase().includes(q)) ||
-        (item.notes && item.notes.toLowerCase().includes(q));
-      if (!match) isHighlighted = false;
-    }
-    if (categoryFilter && item.category !== categoryFilter) {
-      isHighlighted = false;
-    }
-  }
 
   const handleDragOver = (e: React.DragEvent) => {
     if (isRoutineItemDragging || isTimeSlotDragging || isDayDragging) {
@@ -114,22 +99,45 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
         transition: 'background-color 0.15s ease',
       }}
     >
-      {item ? (
-        <RoutineCard
-          item={item}
-          settings={settings}
-          isDragging={isThisItemDragging}
-          onEdit={onEditItem}
-          onDuplicate={onDuplicateItem}
-          onDelete={onDeleteItem}
-          onDragStart={(e) => {
-            e.dataTransfer.setData('text/plain', item.id);
-            e.dataTransfer.effectAllowed = 'move';
-            onDragStartItem(item.id, dayId, timeSlotId);
-          }}
-          onDragEnd={onDragEndItem}
-          isHighlighted={isHighlighted}
-        />
+      {cellItems.length > 0 ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          {cellItems.map((cItem) => {
+            const isThisItemDragging = isRoutineItemDragging && dragState.sourceId === cItem.id;
+            let isHighlighted = true;
+            if (searchFilter.trim()) {
+              const q = searchFilter.toLowerCase();
+              const match =
+                cItem.title.toLowerCase().includes(q) ||
+                (cItem.subtitle && cItem.subtitle.toLowerCase().includes(q)) ||
+                (cItem.instructor && cItem.instructor.toLowerCase().includes(q)) ||
+                (cItem.location && cItem.location.toLowerCase().includes(q)) ||
+                (cItem.notes && cItem.notes.toLowerCase().includes(q));
+              if (!match) isHighlighted = false;
+            }
+            if (categoryFilter && cItem.category !== categoryFilter) {
+              isHighlighted = false;
+            }
+
+            return (
+              <RoutineCard
+                key={cItem.id}
+                item={cItem}
+                settings={settings}
+                isDragging={isThisItemDragging}
+                onEdit={onEditItem}
+                onDuplicate={onDuplicateItem}
+                onDelete={onDeleteItem}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', cItem.id);
+                  e.dataTransfer.effectAllowed = 'move';
+                  onDragStartItem(cItem.id, dayId, timeSlotId);
+                }}
+                onDragEnd={onDragEndItem}
+                isHighlighted={isHighlighted}
+              />
+            );
+          })}
+        </Box>
       ) : (
         <Box
           onClick={() => onAddClick(dayId, timeSlotId)}
