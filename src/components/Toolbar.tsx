@@ -9,6 +9,8 @@ import {
   ArrowRightLeft,
   BarChart2,
   Trash2,
+  X,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface ToolbarProps {
@@ -23,6 +25,8 @@ interface ToolbarProps {
   onAddDayClick: () => void;
   onOpenStats: () => void;
   onClearAll: () => void;
+  totalFilteredCount?: number;
+  totalItemsCount?: number;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -37,56 +41,56 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onAddDayClick,
   onOpenStats,
   onClearAll,
+  totalFilteredCount,
+  totalItemsCount,
 }) => {
   return (
-    <div className="flex flex-col gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs mb-4 no-print">
-      {/* Upper toolbar row: Search, Filter, Action Buttons */}
+    <div className="flex flex-col gap-3.5 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 shadow-lg shadow-slate-200/40 dark:shadow-black/20 mb-5 no-print transition-all">
+      {/* Upper toolbar row: Search, Category Quick Chips, and Primary Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Search & Category Filter */}
-        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
-          {/* Search box */}
-          <div className="relative flex-1 min-w-[180px] max-w-sm">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        {/* Search input with live clear & count */}
+        <div className="flex items-center gap-2 flex-1 min-w-[260px] max-w-md">
+          <div className="relative w-full">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchFilter}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search classes, rooms, teachers..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 transition-all"
+              placeholder="Search subjects, rooms, professors..."
+              className="w-full pl-10 pr-9 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/80 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             />
+            {searchFilter && (
+              <button
+                type="button"
+                onClick={() => onSearchChange('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
-
-          {/* Category Dropdown */}
-          <div className="relative">
-            <select
-              value={categoryFilter}
-              onChange={(e) => onCategoryChange(e.target.value)}
-              className="pl-3 pr-8 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-medium cursor-pointer"
-            >
-              <option value="">All Categories</option>
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+          {searchFilter && totalFilteredCount !== undefined && totalItemsCount !== undefined && (
+            <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 shrink-0">
+              {totalFilteredCount}/{totalItemsCount} matches
+            </span>
+          )}
         </div>
 
         {/* Primary Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={onAddItemClick}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs hover:shadow-md transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 hover:-translate-y-0.5 transition-all active:scale-95 cursor-pointer"
             title="Add a new class or event"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>Add Event</span>
           </button>
 
           <button
             onClick={onAddTimeSlotClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium border border-slate-300 dark:border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
             title="Add a new time period column"
           >
             <Clock className="w-3.5 h-3.5 text-indigo-500" />
@@ -96,43 +100,77 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           <button
             onClick={onAddDayClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium border border-slate-300 dark:border-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
             title="Add a new day row"
           >
-            <Calendar className="w-3.5 h-3.5 text-indigo-500" />
+            <Calendar className="w-3.5 h-3.5 text-purple-500" />
             <span className="hidden sm:inline">Add Day</span>
             <span className="sm:hidden">+ Day</span>
           </button>
 
           <button
             onClick={onOpenStats}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium border border-slate-300 dark:border-slate-700 transition-colors"
-            title="View workload stats and hour breakdown"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
+            title="View workload stats and analytics"
           >
-            <BarChart2 className="w-3.5 h-3.5 text-purple-500" />
+            <BarChart2 className="w-3.5 h-3.5 text-emerald-500" />
             <span className="hidden sm:inline">Analytics</span>
           </button>
         </div>
       </div>
 
+      {/* Category Pills Slider / Filter Row */}
+      <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+          <SlidersHorizontal className="w-3 h-3" />
+          Filter:
+        </span>
+        <button
+          onClick={() => onCategoryChange('')}
+          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+            !categoryFilter
+              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map((cat) => {
+          const isActive = categoryFilter === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => onCategoryChange(isActive ? '' : cat)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+                isActive
+                  ? 'bg-indigo-600 text-white shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              {cat}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Lower toolbar row: Layout toggles (Days on Right, Compact, Time Format, Visible Fields) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
         <div className="flex flex-wrap items-center gap-4">
           {/* Day column position toggle (Right / Left) */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium">Days Column:</span>
+            <span className="text-[11px] font-medium text-slate-500">Days Column:</span>
             <button
               onClick={() =>
                 onUpdateSettings({
                   dayColumnPosition: settings.dayColumnPosition === 'right' ? 'left' : 'right',
                 })
               }
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-semibold text-[11px] transition-colors border ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-colors border cursor-pointer ${
                 settings.dayColumnPosition === 'right'
-                  ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'
+                  ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-700 shadow-2xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
               }`}
-              title="Toggle Day column placement between Right and Left"
+              title="Toggle Day column placement between Right (Default) and Left"
             >
               <ArrowRightLeft className="w-3 h-3 text-indigo-500" />
               <span>{settings.dayColumnPosition === 'right' ? 'Rightmost (Default)' : 'Left'}</span>
@@ -141,37 +179,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Time format (12h / 24h) */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium">Time Format:</span>
+            <span className="text-[11px] font-medium text-slate-500">Time:</span>
             <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-slate-100 dark:bg-slate-800">
               <button
                 onClick={() => onUpdateSettings({ timeFormat: '12h' })}
-                className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-colors ${
+                className={`px-2.5 py-0.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                   settings.timeFormat === '12h'
                     ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-2xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                12-Hour
+                12h
               </button>
               <button
                 onClick={() => onUpdateSettings({ timeFormat: '24h' })}
-                className={`px-2 py-0.5 rounded-md text-[11px] font-semibold transition-colors ${
+                className={`px-2.5 py-0.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
                   settings.timeFormat === '24h'
                     ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-2xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                24-Hour
+                24h
               </button>
             </div>
           </div>
 
           {/* Density (Compact / Comfortable) */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium">Density:</span>
+            <span className="text-[11px] font-medium text-slate-500">Density:</span>
             <button
               onClick={() => onUpdateSettings({ compactMode: !settings.compactMode })}
-              className={`px-2.5 py-1 rounded-lg font-medium text-[11px] border transition-colors ${
+              className={`px-2.5 py-1 rounded-lg font-semibold text-xs border transition-colors cursor-pointer ${
                 settings.compactMode
                   ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
@@ -182,31 +220,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
 
           {/* Field visibility checkboxes */}
-          <div className="hidden lg:flex items-center gap-3 text-[11px]">
-            <label className="flex items-center gap-1 cursor-pointer select-none">
+          <div className="hidden lg:flex items-center gap-3 text-xs">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={settings.showLocation}
                 onChange={(e) => onUpdateSettings({ showLocation: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
               />
               <span>Rooms</span>
             </label>
-            <label className="flex items-center gap-1 cursor-pointer select-none">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={settings.showInstructor}
                 onChange={(e) => onUpdateSettings({ showInstructor: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
               />
               <span>Instructors</span>
             </label>
-            <label className="flex items-center gap-1 cursor-pointer select-none">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={settings.showCategory}
                 onChange={(e) => onUpdateSettings({ showCategory: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
               />
               <span>Tags</span>
             </label>
@@ -220,9 +258,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               onClearAll();
             }
           }}
-          className="text-xs text-rose-500 hover:text-rose-600 hover:underline flex items-center gap-1"
+          className="text-xs font-semibold text-rose-500 hover:text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
         >
-          <Trash2 className="w-3 h-3" />
+          <Trash2 className="w-3.5 h-3.5" />
           <span>Clear Events</span>
         </button>
       </div>

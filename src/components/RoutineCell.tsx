@@ -60,7 +60,6 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   }
 
   const handleDragOver = (e: React.DragEvent) => {
-    // Only allow routine-item drops, never time slots or day rows
     if (isRoutineItemDragging) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
@@ -85,10 +84,10 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`p-1.5 sm:p-2 border-b border-r border-slate-200 dark:border-slate-800 transition-all duration-200 align-top min-w-[170px] sm:min-w-[195px] max-w-[240px] ${
+      className={`p-2 border-b border-r border-slate-200 dark:border-slate-800/80 transition-all duration-200 align-top min-w-[175px] sm:min-w-[205px] max-w-[260px] ${
         isOver
-          ? 'bg-indigo-50/80 dark:bg-indigo-950/60 ring-2 ring-indigo-500 ring-inset'
-          : 'bg-white dark:bg-slate-950/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/30'
+          ? 'bg-indigo-50/80 dark:bg-indigo-950/60 ring-2 ring-indigo-500 ring-inset shadow-inner'
+          : 'bg-white/60 dark:bg-slate-950/40 hover:bg-slate-50/80 dark:hover:bg-slate-900/40'
       }`}
     >
       {item ? (
@@ -110,18 +109,20 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
       ) : (
         <div
           onClick={() => onAddClick(dayId, timeSlotId)}
-          className={`h-full min-h-[78px] sm:min-h-[88px] rounded-xl border border-dashed transition-all flex flex-col items-center justify-center cursor-pointer group ${
+          className={`h-full min-h-[82px] sm:min-h-[92px] rounded-xl border border-dashed transition-all flex flex-col items-center justify-center cursor-pointer group select-none ${
             isOver
-              ? 'border-indigo-500 bg-indigo-100/50 dark:bg-indigo-900/40 text-indigo-600 scale-[0.98]'
-              : 'border-slate-200 dark:border-slate-800/80 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 text-slate-400 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400'
+              ? 'border-indigo-500 bg-indigo-100/60 dark:bg-indigo-900/40 text-indigo-600 scale-[0.98]'
+              : isRoutineItemDragging
+              ? 'border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 dark:bg-indigo-950/20 text-indigo-500 animate-pulse'
+              : 'border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 text-slate-400 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400'
           }`}
         >
-          <div className="flex items-center gap-1 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-105">
-            <Plus className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-105">
+            <Plus className="w-4 h-4 text-indigo-500" />
             <span>Add Event</span>
           </div>
           {isOver && (
-            <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-300">
+            <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-300 mt-0.5">
               Drop here to place
             </span>
           )}

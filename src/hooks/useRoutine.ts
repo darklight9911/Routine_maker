@@ -260,6 +260,37 @@ export function useRoutine() {
     endDrag();
   }, [dragState, routine, pushHistory, endDrag]);
 
+  // Single-pointer alternatives to dragging (WCAG 2.2 AA requirement)
+  const moveTimeSlot = useCallback((slotId: string, direction: 'left' | 'right') => {
+    const idx = routine.timeSlots.findIndex((s) => s.id === slotId);
+    if (idx === -1) return;
+    const targetIdx = direction === 'left' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= routine.timeSlots.length) return;
+
+    pushHistory(routine);
+    setRoutine((prev) => {
+      const newSlots = [...prev.timeSlots];
+      const [removed] = newSlots.splice(idx, 1);
+      newSlots.splice(targetIdx, 0, removed);
+      return { ...prev, timeSlots: newSlots };
+    });
+  }, [routine, pushHistory]);
+
+  const moveDay = useCallback((dayId: string, direction: 'up' | 'down') => {
+    const idx = routine.days.findIndex((d) => d.id === dayId);
+    if (idx === -1) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= routine.days.length) return;
+
+    pushHistory(routine);
+    setRoutine((prev) => {
+      const newDays = [...prev.days];
+      const [removed] = newDays.splice(idx, 1);
+      newDays.splice(targetIdx, 0, removed);
+      return { ...prev, days: newDays };
+    });
+  }, [routine, pushHistory]);
+
   // 3. Routine contents can be dragged and switched anywhere among routine contents
   const dropRoutineItemToCell = useCallback((targetDayId: string, targetTimeSlotId: string) => {
     if (dragState.type !== 'routine-item' || !dragState.sourceId) {
@@ -343,6 +374,8 @@ export function useRoutine() {
     addTimeSlot,
     updateTimeSlot,
     deleteTimeSlot,
+    moveTimeSlot,
+    moveDay,
     // DnD
     dragState,
     activeDropTarget,
