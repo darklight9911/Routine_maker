@@ -10,6 +10,8 @@ import { DayModal } from './components/DayModal';
 import { TemplatesModal } from './components/TemplatesModal';
 import { StatsDrawer } from './components/StatsDrawer';
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -178,7 +180,8 @@ export function App() {
 
   return (
     <ThemeProvider theme={cozyTheme}>
-      <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <CssBaseline />
       <Box
         sx={{
           minHeight: '100vh',
@@ -321,6 +324,7 @@ export function App() {
           onSave={handleSaveTimeSlot}
           onDelete={deleteTimeSlot}
           initialSlot={editingTimeSlot}
+          timeFormat={routine.settings.timeFormat}
         />
 
         <DayModal
@@ -343,6 +347,7 @@ export function App() {
           routine={routine}
         />
       </Box>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }

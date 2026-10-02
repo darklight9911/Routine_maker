@@ -15,19 +15,34 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/Delete';
 import CoffeeIcon from '@mui/icons-material/Coffee';
 
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import dayjs, { type Dayjs } from 'dayjs';
+
 interface TimeSlotModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (slot: Omit<TimeSlot, 'id'> | TimeSlot) => void;
   onDelete?: (slotId: string) => void;
   initialSlot?: TimeSlot | null;
+  timeFormat?: '12h' | '24h';
 }
+
+const parseTimeString = (timeStr: string): Dayjs | null => {
+  if (!timeStr) return null;
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return null;
+  const h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  if (isNaN(h) || isNaN(m)) return null;
+  return dayjs().hour(h).minute(m).second(0);
+};
 
 const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
   onClose,
   onSave,
   onDelete,
   initialSlot,
+  timeFormat = '12h',
 }) => {
   const [startTime, setStartTime] = useState(initialSlot?.startTime || '09:00');
   const [endTime, setEndTime] = useState(initialSlot?.endTime || '10:00');
@@ -100,31 +115,59 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
       <form onSubmit={handleSubmit}>
         <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <TextField
+            <TimePicker
               label="Start Time"
-              type="time"
-              required
-              size="small"
-              fullWidth
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              value={parseTimeString(startTime)}
+              onChange={(newVal: Dayjs | null) => {
+                if (newVal && newVal.isValid()) {
+                  setStartTime(newVal.format('HH:mm'));
+                }
+              }}
+              ampm={timeFormat === '12h'}
               slotProps={{
-                input: { sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' } },
-                inputLabel: { shrink: true },
+                textField: {
+                  size: 'small',
+                  required: true,
+                  fullWidth: true,
+                  slotProps: {
+                    input: {
+                      sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' },
+                    },
+                  },
+                },
+                popper: {
+                  sx: {
+                    zIndex: 1400,
+                  },
+                },
               }}
             />
 
-            <TextField
+            <TimePicker
               label="End Time"
-              type="time"
-              required
-              size="small"
-              fullWidth
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              value={parseTimeString(endTime)}
+              onChange={(newVal: Dayjs | null) => {
+                if (newVal && newVal.isValid()) {
+                  setEndTime(newVal.format('HH:mm'));
+                }
+              }}
+              ampm={timeFormat === '12h'}
               slotProps={{
-                input: { sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' } },
-                inputLabel: { shrink: true },
+                textField: {
+                  size: 'small',
+                  required: true,
+                  fullWidth: true,
+                  slotProps: {
+                    input: {
+                      sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' },
+                    },
+                  },
+                },
+                popper: {
+                  sx: {
+                    zIndex: 1400,
+                  },
+                },
               }}
             />
           </Box>
