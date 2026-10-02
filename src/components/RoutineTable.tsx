@@ -289,11 +289,12 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
                 {/* Content cells across all time slots */}
                 {routine.timeSlots.map((slot) => {
                   if (slot.isBreak) {
+                    if (dIdx !== 0) return null;
                     return (
                       <BreakStripCell
-                        key={`${day.id}_${slot.id}`}
+                        key={slot.id}
                         slot={slot}
-                        day={day}
+                        rowSpan={routine.days.length}
                         onEditSlot={onEditTimeSlot}
                       />
                     );
