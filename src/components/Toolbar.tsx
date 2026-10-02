@@ -16,8 +16,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import Typography from '@mui/material/Typography';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 
 interface ToolbarProps {
   settings: RoutineSettings;
@@ -47,320 +47,256 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onAddDayClick,
   onOpenStats,
   onClearAll,
-  totalFilteredCount,
-  totalItemsCount,
+  totalFilteredCount: _totalFilteredCount,
+  totalItemsCount: _totalItemsCount,
 }) => {
   return (
     <Paper
       elevation={0}
       className="no-print"
       sx={{
-        p: { xs: 2, sm: 2.5 },
-        mb: 3,
+        px: { xs: 1.5, sm: 2 },
+        py: 1,
+        mb: 1.5,
         backgroundColor: '#FFFFFF',
         border: '1px solid #E5E0D6',
-        borderRadius: '18px',
-        boxShadow: '0 2px 8px rgba(46,51,47,0.04)',
+        borderRadius: '14px',
+        boxShadow: '0 1px 4px rgba(46,51,47,0.03)',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 1.5,
       }}
     >
-      {/* Upper toolbar row: Search Bar & Primary Actions */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 2,
-        }}
-      >
-        {/* Search Input */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: '260px', maxWidth: '420px' }}>
-          <TextField
-            size="small"
-            fullWidth
-            placeholder="Search classes, rooms, professors..."
-            value={searchFilter}
-            onChange={(e) => onSearchChange(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#8C948D', fontSize: 20 }} />
-                  </InputAdornment>
-                ),
-                endAdornment: searchFilter ? (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => onSearchChange('')} edge="end">
-                      <ClearIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </InputAdornment>
-                ) : null,
-                sx: {
-                  borderRadius: '12px',
-                  backgroundColor: '#FAF8F5',
-                  fontSize: '13.5px',
-                  '& fieldset': { borderColor: '#E5E0D6' },
-                  '&:hover fieldset': { borderColor: '#BDB6A8' },
-                  '&.Mui-focused fieldset': { borderColor: '#5B7065' },
-                },
-              },
-            }}
-          />
-          {searchFilter && totalFilteredCount !== undefined && totalItemsCount !== undefined && (
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#5B7065', whiteSpace: 'nowrap' }}>
-              {totalFilteredCount}/{totalItemsCount}
-            </Typography>
-          )}
-        </Box>
-
-        {/* Primary Action Buttons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={onAddItemClick}
-            sx={{
-              backgroundColor: '#5B7065',
-              fontWeight: 700,
-              fontSize: '13px',
-              px: 2.2,
-              '&:hover': { backgroundColor: '#485A50' },
-            }}
-          >
-            Add Event
-          </Button>
-
-          <Button
-            variant="outlined"
-            startIcon={<AccessTimeIcon sx={{ color: '#5B7065' }} />}
-            onClick={onAddTimeSlotClick}
-            sx={{
-              borderColor: '#E5E0D6',
-              color: '#2E332F',
-              fontSize: '13px',
-              '&:hover': { borderColor: '#5B7065', backgroundColor: '#F8F6F2' },
-            }}
-          >
-            <span className="hidden sm:inline">Add Time Slot</span>
-            <span className="sm:hidden">+ Time</span>
-          </Button>
-
-          <Button
-            variant="outlined"
-            startIcon={<CalendarMonthIcon sx={{ color: '#B87352' }} />}
-            onClick={onAddDayClick}
-            sx={{
-              borderColor: '#E5E0D6',
-              color: '#2E332F',
-              fontSize: '13px',
-              '&:hover': { borderColor: '#B87352', backgroundColor: '#FAF4F0' },
-            }}
-          >
-            <span className="hidden sm:inline">Add Day</span>
-            <span className="sm:hidden">+ Day</span>
-          </Button>
-
-          <Button
-            variant="outlined"
-            startIcon={<AnalyticsOutlinedIcon sx={{ color: '#5B7A8C' }} />}
-            onClick={onOpenStats}
-            sx={{
-              borderColor: '#E5E0D6',
-              color: '#2E332F',
-              fontSize: '13px',
-              '&:hover': { borderColor: '#5B7A8C', backgroundColor: '#F2F6F8' },
-            }}
-          >
-            Analytics
-          </Button>
-        </Box>
-      </Box>
-
-      {/* Category Pills Row */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          mt: 2,
-          pt: 1.5,
-          borderTop: '1px solid #EFECE6',
-          overflowX: 'auto',
-          pb: 0.5,
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            fontWeight: 700,
-            color: '#8C948D',
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            mr: 0.5,
-            flexShrink: 0,
-          }}
-        >
-          Categories:
-        </Typography>
-
-        <Chip
-          label="All"
+      {/* Left side: Compact Search & Category Pills */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', flex: 1, minWidth: 240 }}>
+        {/* Search */}
+        <TextField
           size="small"
-          clickable
-          onClick={() => onCategoryChange('')}
-          sx={{
-            backgroundColor: !categoryFilter ? '#2E332F' : '#FAF8F5',
-            color: !categoryFilter ? '#FFFFFF' : '#556058',
-            border: '1px solid',
-            borderColor: !categoryFilter ? '#2E332F' : '#E5E0D6',
-            fontWeight: 600,
-            fontSize: '12px',
+          placeholder="Search..."
+          value={searchFilter}
+          onChange={(e) => onSearchChange(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#8C948D', fontSize: 16 }} />
+                </InputAdornment>
+              ),
+              endAdornment: searchFilter ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => onSearchChange('')} edge="end" sx={{ p: 0.25 }}>
+                    <ClearIcon sx={{ fontSize: 13 }} />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+              sx: {
+                borderRadius: '8px',
+                backgroundColor: '#FAF8F5',
+                fontSize: '12px',
+                height: 30,
+                width: { xs: '100%', sm: 150 },
+                '& fieldset': { borderColor: '#E5E0D6' },
+                '&:hover fieldset': { borderColor: '#BDB6A8' },
+                '&.Mui-focused fieldset': { borderColor: '#5B7065' },
+              },
+            },
           }}
         />
 
-        {CATEGORIES.map((cat) => {
-          const isSelected = categoryFilter === cat;
-          return (
-            <Chip
-              key={cat}
-              label={cat}
-              size="small"
-              clickable
-              onClick={() => onCategoryChange(isSelected ? '' : cat)}
-              sx={{
-                backgroundColor: isSelected ? '#5B7065' : '#FAF8F5',
-                color: isSelected ? '#FFFFFF' : '#556058',
-                border: '1px solid',
-                borderColor: isSelected ? '#5B7065' : '#E5E0D6',
-                fontWeight: 600,
-                fontSize: '12px',
-                '&:hover': {
-                  backgroundColor: isSelected ? '#4A5D53' : '#F0ECE4',
-                },
-              }}
-            />
-          );
-        })}
+        {/* Category Pills (Direct, without verbose "CATEGORIES:" text) */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+          <Chip
+            label="All"
+            size="small"
+            clickable
+            onClick={() => onCategoryChange('')}
+            sx={{
+              height: 24,
+              fontSize: '11px',
+              backgroundColor: !categoryFilter ? '#2E332F' : '#FAF8F5',
+              color: !categoryFilter ? '#FFFFFF' : '#556058',
+              border: '1px solid',
+              borderColor: !categoryFilter ? '#2E332F' : '#E5E0D6',
+              fontWeight: 600,
+            }}
+          />
+          {CATEGORIES.map((cat) => {
+            const isSelected = categoryFilter === cat;
+            return (
+              <Chip
+                key={cat}
+                label={cat}
+                size="small"
+                clickable
+                onClick={() => onCategoryChange(isSelected ? '' : cat)}
+                sx={{
+                  height: 24,
+                  fontSize: '11px',
+                  backgroundColor: isSelected ? '#5B7065' : '#FAF8F5',
+                  color: isSelected ? '#FFFFFF' : '#556058',
+                  border: '1px solid',
+                  borderColor: isSelected ? '#5B7065' : '#E5E0D6',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: isSelected ? '#4A5D53' : '#F0ECE4',
+                  },
+                }}
+              />
+            );
+          })}
+        </Box>
       </Box>
 
-      {/* Lower toolbar row: Layout toggles (Days on Right, Time format, Density) */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 2,
-          mt: 2,
-          pt: 1.5,
-          borderTop: '1px solid #EFECE6',
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
-          {/* Day Column Position Toggle */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
-              Days Column:
-            </Typography>
-            <Button
-              size="small"
-              variant={settings.dayColumnPosition === 'left' ? 'contained' : 'outlined'}
-              onClick={() =>
-                onUpdateSettings({
-                  dayColumnPosition: settings.dayColumnPosition === 'left' ? 'right' : 'left',
-                })
-              }
-              startIcon={<SwapHorizIcon />}
-              sx={{
-                fontSize: '11.5px',
-                py: 0.4,
-                px: 1.2,
-                backgroundColor: settings.dayColumnPosition === 'left' ? '#F0F5F1' : 'transparent',
-                color: settings.dayColumnPosition === 'left' ? '#3B4E43' : '#68726A',
-                border: '1px solid',
-                borderColor: settings.dayColumnPosition === 'left' ? '#8FA395' : '#D8D2C7',
-                '&:hover': {
-                  backgroundColor: '#E2EBE5',
-                },
-              }}
-            >
-              {settings.dayColumnPosition === 'left' ? 'Leftmost (Default)' : 'Right'}
-            </Button>
-          </Box>
-
-          {/* Time Format */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
-              Time:
-            </Typography>
-            <ButtonGroup size="small" variant="outlined">
-              <Button
-                onClick={() => onUpdateSettings({ timeFormat: '12h' })}
-                sx={{
-                  fontSize: '11px',
-                  py: 0.3,
-                  backgroundColor: settings.timeFormat === '12h' ? '#5B7065' : 'transparent',
-                  color: settings.timeFormat === '12h' ? '#FFFFFF' : '#68726A',
-                  borderColor: '#D8D2C7',
-                  '&:hover': { backgroundColor: settings.timeFormat === '12h' ? '#4A5D53' : '#F0ECE4' },
-                }}
-              >
-                12h
-              </Button>
-              <Button
-                onClick={() => onUpdateSettings({ timeFormat: '24h' })}
-                sx={{
-                  fontSize: '11px',
-                  py: 0.3,
-                  backgroundColor: settings.timeFormat === '24h' ? '#5B7065' : 'transparent',
-                  color: settings.timeFormat === '24h' ? '#FFFFFF' : '#68726A',
-                  borderColor: '#D8D2C7',
-                  '&:hover': { backgroundColor: settings.timeFormat === '24h' ? '#4A5D53' : '#F0ECE4' },
-                }}
-              >
-                24h
-              </Button>
-            </ButtonGroup>
-          </Box>
-
-          {/* Density */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
-              Density:
-            </Typography>
-            <Button
-              size="small"
-              onClick={() => onUpdateSettings({ compactMode: !settings.compactMode })}
-              sx={{
-                fontSize: '11px',
-                py: 0.3,
-                px: 1.2,
-                backgroundColor: settings.compactMode ? '#F0F5F1' : '#FAF8F5',
-                color: settings.compactMode ? '#3B4E43' : '#68726A',
-                border: '1px solid',
-                borderColor: settings.compactMode ? '#8FA395' : '#D8D2C7',
-              }}
-            >
-              {settings.compactMode ? 'Compact' : 'Comfortable'}
-            </Button>
-          </Box>
-        </Box>
-
-        {/* Clear Events Button */}
+      {/* Right side: Action Buttons & Layout Toggles */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        {/* Add Event */}
         <Button
           size="small"
-          color="error"
-          startIcon={<DeleteOutlineIcon />}
-          onClick={() => {
-            if (window.confirm('Are you sure you want to clear all routine items?')) {
-              onClearAll();
-            }
+          variant="contained"
+          startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+          onClick={onAddItemClick}
+          sx={{
+            backgroundColor: '#5B7065',
+            fontWeight: 700,
+            fontSize: '12px',
+            py: 0.35,
+            px: 1.25,
+            '&:hover': { backgroundColor: '#485A50' },
           }}
-          sx={{ fontSize: '11.5px', textTransform: 'none', color: '#C15C5C' }}
         >
-          Clear Events
+          Event
         </Button>
+
+        {/* Add Time Slot */}
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<AccessTimeIcon sx={{ fontSize: 15, color: '#5B7065' }} />}
+          onClick={onAddTimeSlotClick}
+          sx={{
+            borderColor: '#E5E0D6',
+            color: '#2E332F',
+            fontSize: '12px',
+            py: 0.35,
+            px: 1.1,
+            '&:hover': { borderColor: '#5B7065', backgroundColor: '#F8F6F2' },
+          }}
+        >
+          Slot
+        </Button>
+
+        {/* Add Day */}
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<CalendarMonthIcon sx={{ fontSize: 15, color: '#B87352' }} />}
+          onClick={onAddDayClick}
+          sx={{
+            borderColor: '#E5E0D6',
+            color: '#2E332F',
+            fontSize: '12px',
+            py: 0.35,
+            px: 1.1,
+            '&:hover': { borderColor: '#B87352', backgroundColor: '#FAF4F0' },
+          }}
+        >
+          Day
+        </Button>
+
+        <Box sx={{ width: '1px', height: 18, backgroundColor: '#E5E0D6', mx: 0.25 }} />
+
+        {/* 12h / 24h Toggle */}
+        <ButtonGroup size="small" variant="outlined" sx={{ height: 26 }}>
+          <Button
+            onClick={() => onUpdateSettings({ timeFormat: '12h' })}
+            sx={{
+              fontSize: '10.5px',
+              px: 0.75,
+              py: 0,
+              backgroundColor: settings.timeFormat === '12h' ? '#5B7065' : 'transparent',
+              color: settings.timeFormat === '12h' ? '#FFFFFF' : '#68726A',
+              borderColor: '#D8D2C7',
+              '&:hover': { backgroundColor: settings.timeFormat === '12h' ? '#4A5D53' : '#F0ECE4' },
+            }}
+          >
+            12h
+          </Button>
+          <Button
+            onClick={() => onUpdateSettings({ timeFormat: '24h' })}
+            sx={{
+              fontSize: '10.5px',
+              px: 0.75,
+              py: 0,
+              backgroundColor: settings.timeFormat === '24h' ? '#5B7065' : 'transparent',
+              color: settings.timeFormat === '24h' ? '#FFFFFF' : '#68726A',
+              borderColor: '#D8D2C7',
+              '&:hover': { backgroundColor: settings.timeFormat === '24h' ? '#4A5D53' : '#F0ECE4' },
+            }}
+          >
+            24h
+          </Button>
+        </ButtonGroup>
+
+        {/* Days Column flip */}
+        <Tooltip title={`Days: ${settings.dayColumnPosition === 'left' ? 'Left' : 'Right'} (Click to flip)`} arrow>
+          <IconButton
+            size="small"
+            onClick={() =>
+              onUpdateSettings({
+                dayColumnPosition: settings.dayColumnPosition === 'left' ? 'right' : 'left',
+              })
+            }
+            sx={{
+              border: '1px solid #E5E0D6',
+              borderRadius: '8px',
+              p: 0.4,
+              color: '#5B7065',
+              backgroundColor: '#FAF8F5',
+            }}
+          >
+            <SwapHorizIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Tooltip>
+
+        {/* Analytics Drawer Button */}
+        <Tooltip title="Statistics" arrow>
+          <IconButton
+            size="small"
+            onClick={onOpenStats}
+            sx={{
+              border: '1px solid #E5E0D6',
+              borderRadius: '8px',
+              p: 0.4,
+              color: '#5B7A8C',
+              backgroundColor: '#FAF8F5',
+            }}
+          >
+            <AnalyticsOutlinedIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Tooltip>
+
+        {/* Clear All */}
+        <Tooltip title="Clear all events" arrow>
+          <IconButton
+            size="small"
+            onClick={() => {
+              if (window.confirm('Clear all routine items?')) {
+                onClearAll();
+              }
+            }}
+            sx={{
+              border: '1px solid #E5E0D6',
+              borderRadius: '8px',
+              p: 0.4,
+              color: '#C15C5C',
+              backgroundColor: '#FAF8F5',
+            }}
+          >
+            <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Paper>
   );

@@ -75,23 +75,24 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
         backgroundColor: slot.isBreak ? '#FAF3E8' : isOver ? '#EBF2ED' : '#F6F3ED',
         borderBottom: '1px solid #E5E0D6',
         borderRight: '1px solid #E5E0D6',
-        padding: '12px 14px',
+        padding: '6px 8px',
         textAlign: 'left',
         userSelect: 'none',
-        minWidth: '180px',
-        maxWidth: '240px',
+        minWidth: '130px',
+        maxWidth: '180px',
         cursor: 'grab',
         transition: 'all 0.15s ease',
-        outline: isOver ? '2px solid #5B7065' : 'none',
+        outline: isOver ? '2px dashed #5B7065' : 'none',
+        outlineOffset: '-2px',
         opacity: isDraggingMe ? 0.35 : 1,
       }}
     >
-      {/* Top row: Grip, Label, Break Status, Single-pointer arrows */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, gap: 0.5 }}>
+      {/* Top row: Grip, Label, Break Status, Actions */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5, gap: 0.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
           <DragIndicatorIcon
             sx={{
-              fontSize: 16,
+              fontSize: 14,
               color: '#8C948D',
               cursor: 'grab',
               transform: 'rotate(90deg)',
@@ -104,10 +105,10 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
               variant="caption"
               sx={{
                 fontWeight: 700,
-                fontSize: '11px',
+                fontSize: '10.5px',
                 color: '#3B423D',
                 textTransform: 'uppercase',
-                letterSpacing: '0.04em',
+                letterSpacing: '0.03em',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -122,19 +123,18 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 0.4,
-                px: 1,
-                py: 0.2,
-                borderRadius: '6px',
+                gap: 0.3,
+                px: 0.7,
+                py: 0.1,
+                borderRadius: '5px',
                 backgroundColor: '#F5E6D3',
                 color: '#6E451A',
-                fontSize: '10px',
+                fontSize: '9.5px',
                 fontWeight: 700,
                 textTransform: 'uppercase',
-                letterSpacing: '0.04em',
               }}
             >
-              <CoffeeIcon sx={{ fontSize: 12 }} />
+              <CoffeeIcon sx={{ fontSize: 11 }} />
               <span>Break</span>
             </Box>
           )}
@@ -146,11 +146,11 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 0.25,
+            gap: 0.2,
           }}
         >
           {onMove && index > 0 && (
-            <Tooltip title="Move column left" arrow>
+            <Tooltip title="Left" arrow>
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -158,18 +158,18 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
                   onMove(slot.id, 'left');
                 }}
                 sx={{
-                  p: 0.4,
+                  p: 0.3,
                   color: '#637067',
                   '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
                 }}
               >
-                <ChevronLeftIcon sx={{ fontSize: 16 }} />
+                <ChevronLeftIcon sx={{ fontSize: 15 }} />
               </IconButton>
             </Tooltip>
           )}
 
           {onMove && index < totalSlots - 1 && (
-            <Tooltip title="Move column right" arrow>
+            <Tooltip title="Right" arrow>
               <IconButton
                 size="small"
                 onClick={(e) => {
@@ -177,17 +177,17 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
                   onMove(slot.id, 'right');
                 }}
                 sx={{
-                  p: 0.4,
+                  p: 0.3,
                   color: '#637067',
                   '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
                 }}
               >
-                <ChevronRightIcon sx={{ fontSize: 16 }} />
+                <ChevronRightIcon sx={{ fontSize: 15 }} />
               </IconButton>
             </Tooltip>
           )}
 
-          <Tooltip title="Edit slot" arrow>
+          <Tooltip title="Edit" arrow>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -195,16 +195,16 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
                 onEdit(slot);
               }}
               sx={{
-                p: 0.4,
+                p: 0.3,
                 color: '#637067',
                 '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
               }}
             >
-              <EditOutlinedIcon sx={{ fontSize: 14 }} />
+              <EditOutlinedIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Delete slot" arrow>
+          <Tooltip title="Delete" arrow>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -212,51 +212,39 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
                 onDelete(slot.id);
               }}
               sx={{
-                p: 0.4,
+                p: 0.3,
                 color: '#637067',
                 '&:hover': { backgroundColor: '#ECE7DE', color: '#C15C5C' },
               }}
             >
-              <DeleteOutlineIcon sx={{ fontSize: 14 }} />
+              <DeleteOutlineIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
         </Box>
       </Box>
 
       {/* Main Time display */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-        <AccessTimeIcon sx={{ fontSize: 15, color: '#5B7065' }} />
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: '"JetBrains Mono", monospace',
-            fontWeight: 700,
-            fontSize: '13px',
-            color: '#2E332F',
-          }}
-        >
-          {formattedRange}
-        </Typography>
-      </Box>
-
-      {/* Duration chip */}
-      {durationMin > 0 && (
-        <Box
-          sx={{
-            display: 'inline-block',
-            mt: 0.75,
-            px: 0.8,
-            py: 0.15,
-            borderRadius: '6px',
-            backgroundColor: '#ECE7DE',
-            color: '#556058',
-            fontSize: '10.5px',
-            fontWeight: 600,
-          }}
-        >
-          {formatDuration(durationMin)}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <AccessTimeIcon sx={{ fontSize: 13, color: '#5B7065' }} />
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: '"JetBrains Mono", monospace',
+              fontWeight: 700,
+              fontSize: '11.5px',
+              color: '#2E332F',
+            }}
+          >
+            {formattedRange}
+          </Typography>
         </Box>
-      )}
+        {durationMin > 0 && (
+          <Typography variant="caption" sx={{ fontSize: '10px', color: '#7E8780', fontFamily: '"JetBrains Mono", monospace' }}>
+            {formatDuration(durationMin)}
+          </Typography>
+        )}
+      </Box>
     </th>
   );
 };

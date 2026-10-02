@@ -14,8 +14,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import HelpOutlineIcon from '@mui/icons-material/Help';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -27,6 +25,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import confetti from 'canvas-confetti';
 
 interface HeaderProps {
@@ -115,69 +116,134 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <Box sx={{ mb: 3.5 }} className="no-print">
-      {/* Top Navbar */}
+    <Box sx={{ mb: 1.5 }} className="no-print">
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 1.5, sm: 2 },
+          px: { xs: 1.5, sm: 2 },
+          py: 1,
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 2,
+          gap: 1.5,
           backgroundColor: '#FFFFFF',
           border: '1px solid #E5E0D6',
-          borderRadius: '18px',
-          mb: 2.5,
-          boxShadow: '0 2px 8px rgba(46,51,47,0.04)',
+          borderRadius: '14px',
+          boxShadow: '0 1px 4px rgba(46,51,47,0.03)',
         }}
       >
-        {/* Brand identity */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        {/* Left: Brand icon + Title & Subtitle (inline editable) */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0, flex: 1 }}>
           <Box
             sx={{
-              width: 44,
-              height: 44,
-              borderRadius: '14px',
+              width: 32,
+              height: 32,
+              borderRadius: '9px',
               backgroundColor: '#5B7065',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#FFFFFF',
-              boxShadow: '0 2px 6px rgba(91,112,101,0.2)',
+              flexShrink: 0,
             }}
           >
-            <CalendarMonthIcon sx={{ fontSize: 24 }} />
+            <CalendarMonthIcon sx={{ fontSize: 18 }} />
           </Box>
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F', lineHeight: 1.2 }}>
-                RoutineCraft
-              </Typography>
-              <Box
+
+          {isEditingTitle ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, maxWidth: 420 }}>
+              <TextField
+                size="small"
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+                placeholder="Title"
+                slotProps={{
+                  input: {
+                    sx: {
+                      borderRadius: '8px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      py: 0.2,
+                    },
+                  },
+                }}
+                autoFocus
+              />
+              <IconButton size="small" onClick={handleSaveTitle} sx={{ color: '#5B7065' }}>
+                <CheckIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setTempTitle(routine.title);
+                  setIsEditingTitle(false);
+                }}
+                sx={{ color: '#8C948D' }}
+              >
+                <CloseIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box
+              onClick={() => {
+                setTempTitle(routine.title);
+                setTempSubtitle(routine.subtitle || '');
+                setIsEditingTitle(true);
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.75,
+                minWidth: 0,
+                '&:hover .edit-icon': { opacity: 1 },
+              }}
+            >
+              <Typography
+                variant="subtitle2"
                 sx={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  px: 1,
-                  py: 0.2,
-                  borderRadius: '6px',
-                  backgroundColor: '#EAE6DF',
-                  color: '#4B534D',
+                  fontWeight: 800,
+                  color: '#2E332F',
+                  fontSize: '14.5px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
-                No Backend
-              </Box>
+                {routine.title}
+              </Typography>
+              {routine.subtitle && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: '#8C948D',
+                    fontSize: '12px',
+                    display: { xs: 'none', md: 'inline' },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  • {routine.subtitle}
+                </Typography>
+              )}
+              <EditIcon
+                className="edit-icon"
+                sx={{
+                  fontSize: 13,
+                  color: '#8C948D',
+                  opacity: 0,
+                  transition: 'opacity 0.15s ease',
+                  flexShrink: 0,
+                }}
+              />
             </Box>
-            <Typography variant="caption" sx={{ color: '#747C76', display: { xs: 'none', sm: 'block' } }}>
-              Cozy Timetable & Routine Creator
-            </Typography>
-          </Box>
+          )}
         </Box>
 
-        {/* Action Controls */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+        {/* Right: Actions (Undo/Redo, Templates, Export, Help) */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
           {/* Undo & Redo */}
           <Box
             sx={{
@@ -185,67 +251,61 @@ export const Header: React.FC<HeaderProps> = ({
               alignItems: 'center',
               backgroundColor: '#FAF8F5',
               border: '1px solid #E5E0D6',
-              borderRadius: '12px',
-              p: 0.25,
+              borderRadius: '10px',
+              p: 0.2,
             }}
           >
             <Tooltip title="Undo (Ctrl+Z)" arrow>
               <span>
-                <IconButton
-                  size="small"
-                  disabled={!canUndo}
-                  onClick={onUndo}
-                  sx={{ color: '#4A534C' }}
-                >
-                  <UndoIcon sx={{ fontSize: 18 }} />
+                <IconButton size="small" disabled={!canUndo} onClick={onUndo} sx={{ p: 0.5, color: '#4A534C' }}>
+                  <UndoIcon sx={{ fontSize: 16 }} />
                 </IconButton>
               </span>
             </Tooltip>
-            <Box sx={{ width: '1px', height: 16, backgroundColor: '#E5E0D6', my: 'auto' }} />
+            <Box sx={{ width: '1px', height: 14, backgroundColor: '#E5E0D6' }} />
             <Tooltip title="Redo (Ctrl+Y)" arrow>
               <span>
-                <IconButton
-                  size="small"
-                  disabled={!canRedo}
-                  onClick={onRedo}
-                  sx={{ color: '#4A534C' }}
-                >
-                  <RedoIcon sx={{ fontSize: 18 }} />
+                <IconButton size="small" disabled={!canRedo} onClick={onRedo} sx={{ p: 0.5, color: '#4A534C' }}>
+                  <RedoIcon sx={{ fontSize: 16 }} />
                 </IconButton>
               </span>
             </Tooltip>
           </Box>
 
-          {/* Templates Button */}
           <Button
+            size="small"
             variant="outlined"
-            startIcon={<AutoAwesomeIcon sx={{ color: '#B87352' }} />}
+            startIcon={<AutoAwesomeIcon sx={{ fontSize: 15, color: '#B87352' }} />}
             onClick={onOpenTemplates}
             sx={{
               borderColor: '#E5E0D6',
               color: '#2E332F',
-              fontSize: '13px',
+              fontSize: '12px',
+              py: 0.4,
+              px: 1.2,
               '&:hover': { borderColor: '#B87352', backgroundColor: '#FAF4F0' },
             }}
           >
             Templates
           </Button>
 
-          {/* Export Dropdown */}
           <Button
+            size="small"
             variant="contained"
             color="primary"
-            startIcon={<FileDownloadIcon />}
+            startIcon={<FileDownloadIcon sx={{ fontSize: 15 }} />}
             onClick={(e) => setExportAnchorEl(e.currentTarget)}
             sx={{
               backgroundColor: '#2E332F',
               color: '#FFFFFF',
               fontWeight: 700,
-              fontSize: '13px',
+              fontSize: '12px',
+              py: 0.4,
+              px: 1.4,
               '&:hover': { backgroundColor: '#444C46' },
             }}
           >
-            {isExporting ? 'Exporting...' : 'Export'}
+            {isExporting ? '...' : 'Export'}
           </Button>
 
           <Menu
@@ -255,44 +315,44 @@ export const Header: React.FC<HeaderProps> = ({
             slotProps={{
               paper: {
                 sx: {
-                  borderRadius: '14px',
+                  borderRadius: '12px',
                   border: '1px solid #E5E0D6',
-                  boxShadow: '0 8px 24px rgba(46,51,47,0.08)',
-                  minWidth: 200,
+                  boxShadow: '0 6px 20px rgba(46,51,47,0.08)',
+                  minWidth: 180,
                 },
               },
             }}
           >
-            <MenuItem onClick={handleExportPNG} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+            <MenuItem onClick={handleExportPNG} sx={{ py: 0.8, fontSize: '12.5px', color: '#2E332F' }}>
               <ListItemIcon>
-                <ImageIcon sx={{ fontSize: 18, color: '#5B7065' }} />
+                <ImageIcon sx={{ fontSize: 16, color: '#5B7065' }} />
               </ListItemIcon>
-              <ListItemText primary="Download PNG Image" />
+              <ListItemText primary="PNG Image" />
             </MenuItem>
-            <MenuItem onClick={handlePrint} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+            <MenuItem onClick={handlePrint} sx={{ py: 0.8, fontSize: '12.5px', color: '#2E332F' }}>
               <ListItemIcon>
-                <PrintIcon sx={{ fontSize: 18, color: '#5B7A8C' }} />
+                <PrintIcon sx={{ fontSize: 16, color: '#5B7A8C' }} />
               </ListItemIcon>
-              <ListItemText primary="Print / Save PDF" />
+              <ListItemText primary="Print / PDF" />
             </MenuItem>
-            <Box sx={{ my: 0.5, borderTop: '1px solid #ECE7DE' }} />
-            <MenuItem onClick={handleExportJSON} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+            <Box sx={{ my: 0.3, borderTop: '1px solid #ECE7DE' }} />
+            <MenuItem onClick={handleExportJSON} sx={{ py: 0.8, fontSize: '12.5px', color: '#2E332F' }}>
               <ListItemIcon>
-                <DescriptionIcon sx={{ fontSize: 18, color: '#B87352' }} />
+                <DescriptionIcon sx={{ fontSize: 16, color: '#B87352' }} />
               </ListItemIcon>
-              <ListItemText primary="Backup Data (JSON)" />
+              <ListItemText primary="Export JSON" />
             </MenuItem>
             <MenuItem
               onClick={() => {
                 setExportAnchorEl(null);
                 fileInputRef.current?.click();
               }}
-              sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}
+              sx={{ py: 0.8, fontSize: '12.5px', color: '#2E332F' }}
             >
               <ListItemIcon>
-                <FileUploadIcon sx={{ fontSize: 18, color: '#886F91' }} />
+                <FileUploadIcon sx={{ fontSize: 16, color: '#886F91' }} />
               </ListItemIcon>
-              <ListItemText primary="Restore Data (JSON)" />
+              <ListItemText primary="Import JSON" />
             </MenuItem>
           </Menu>
 
@@ -304,227 +364,60 @@ export const Header: React.FC<HeaderProps> = ({
             onChange={handleImportFile}
           />
 
-          {/* Help Button */}
-          <Tooltip title="Drag & Drop Rules" arrow>
+          <Tooltip title="Tips" arrow>
             <IconButton
-              onClick={() => setShowHelp(!showHelp)}
+              size="small"
+              onClick={() => setShowHelp(true)}
               sx={{
+                p: 0.5,
                 border: '1px solid #E5E0D6',
                 backgroundColor: '#FAF8F5',
                 color: '#5B7065',
                 '&:hover': { backgroundColor: '#F0ECE4' },
               }}
             >
-              <HelpOutlineIcon sx={{ fontSize: 19 }} />
+              <HelpOutlineIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Tooltip>
         </Box>
       </Paper>
 
-      {/* Routine Title Banner (Cozy solid tone, NO gradients) */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: { xs: 2.5, sm: 3 },
-          backgroundColor: '#F5F1E8',
-          border: '1px solid #E6E0D4',
-          borderRadius: '18px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 2,
+      {/* Clean Tips Dialog */}
+      <Dialog
+        open={showHelp}
+        onClose={() => setShowHelp(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: '16px',
+              border: '1px solid #E5E0D6',
+              p: 1,
+            },
+          },
         }}
       >
-        {isEditingTitle ? (
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <TextField
-              size="small"
-              fullWidth
-              value={tempTitle}
-              onChange={(e) => setTempTitle(e.target.value)}
-              placeholder="Timetable Title"
-              slotProps={{
-                input: {
-                  sx: {
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '10px',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                  },
-                },
-              }}
-              autoFocus
-            />
-            <TextField
-              size="small"
-              fullWidth
-              value={tempSubtitle}
-              onChange={(e) => setTempSubtitle(e.target.value)}
-              placeholder="Subtitle (e.g. Semester, department or project)"
-              slotProps={{
-                input: {
-                  sx: {
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '10px',
-                    fontSize: '13px',
-                  },
-                },
-              }}
-            />
-            <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                startIcon={<CheckIcon />}
-                onClick={handleSaveTitle}
-                sx={{ backgroundColor: '#5B7065' }}
-              >
-                Save
-              </Button>
-              <Button
-                size="small"
-                variant="outlined"
-                startIcon={<CloseIcon />}
-                onClick={() => {
-                  setTempTitle(routine.title);
-                  setTempSubtitle(routine.subtitle || '');
-                  setIsEditingTitle(false);
-                }}
-                sx={{ borderColor: '#D8D2C7', color: '#68726A' }}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        ) : (
-          <Box
-            onClick={() => {
-              setTempTitle(routine.title);
-              setTempSubtitle(routine.subtitle || '');
-              setIsEditingTitle(true);
-            }}
-            sx={{ cursor: 'pointer', flex: 1, '&:hover .edit-icon': { opacity: 1 } }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#2E332F', letterSpacing: '-0.01em' }}>
-                {routine.title}
-              </Typography>
-              <EditIcon
-                className="edit-icon"
-                sx={{
-                  fontSize: 16,
-                  color: '#5B7065',
-                  opacity: 0,
-                  transition: 'opacity 0.15s ease',
-                }}
-              />
-            </Box>
-            {routine.subtitle && (
-              <Typography variant="body2" sx={{ color: '#68726A', mt: 0.5, fontWeight: 500 }}>
-                {routine.subtitle}
-              </Typography>
-            )}
-          </Box>
-        )}
-
-        {/* Status badges */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'flex-start', sm: 'flex-end' }, gap: 0.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                px: 1.25,
-                py: 0.35,
-                borderRadius: '8px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E5E0D6',
-                color: '#2E332F',
-                fontSize: '11px',
-                fontWeight: 700,
-              }}
-            >
-              <AccessTimeIcon sx={{ fontSize: 13, color: '#5B7065' }} />
-              <span>Upper Row: Time</span>
-            </Box>
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                px: 1.25,
-                py: 0.35,
-                borderRadius: '8px',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E5E0D6',
-                color: '#2E332F',
-                fontSize: '11px',
-                fontWeight: 700,
-              }}
-            >
-              <ViewWeekIcon sx={{ fontSize: 13, color: '#B87352' }} />
-              <span>{routine.settings.dayColumnPosition === 'left' ? 'Leftmost Column: Days' : 'Rightmost Column: Days'}</span>
-            </Box>
-          </Box>
-          <Typography variant="caption" sx={{ color: '#7E8780', fontFamily: '"JetBrains Mono", monospace' }}>
-            {routine.days.length} Days • {routine.timeSlots.length} Time Slots • {routine.items.length} Activities
+        <DialogTitle sx={{ m: 0, p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+            Tips & Controls
           </Typography>
-        </Box>
-      </Paper>
-
-      {/* Interactive Rules & Drag-and-Drop Help Card */}
-      {showHelp && (
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2.5,
-            mt: 2,
-            backgroundColor: '#FAF5EE',
-            border: '1px solid #EAE0D0',
-            borderRadius: '16px',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#2E332F' }}>
-              Drag & Drop Guidelines:
-            </Typography>
-            <IconButton size="small" onClick={() => setShowHelp(false)}>
-              <CloseIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+          <IconButton size="small" onClick={() => setShowHelp(false)}>
+            <CloseIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 2, pt: 0, display: 'flex', flexDirection: 'column', gap: 1.5, fontSize: '13px' }}>
+          <Box sx={{ p: 1.25, backgroundColor: '#FAF8F5', borderRadius: '10px', border: '1px solid #E5E0D6' }}>
+            <strong>Time Slots:</strong> Drag headers horizontally or use arrow buttons to reorder columns.
           </Box>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-              gap: 2,
-              fontSize: '12.5px',
-              color: '#4B534D',
-            }}
-          >
-            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#5B7065', display: 'block', mb: 0.5 }}>
-                Time Slots (Upper Row)
-              </Typography>
-              Drag time headers horizontally to swap columns, or use the left/right arrow buttons. Only swaps with other time slots.
-            </Box>
-            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#B87352', display: 'block', mb: 0.5 }}>
-                Days (Rightmost Column)
-              </Typography>
-              Drag day headers vertically to swap day rows, or use the up/down arrow buttons. Only swaps with other days.
-            </Box>
-            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#5B7A8C', display: 'block', mb: 0.5 }}>
-                Routine Events
-              </Typography>
-              Drag any event card freely to empty slots or drop on another card to swap positions anywhere on the routine grid.
-            </Box>
+          <Box sx={{ p: 1.25, backgroundColor: '#FAF8F5', borderRadius: '10px', border: '1px solid #E5E0D6' }}>
+            <strong>Days:</strong> Drag day headers vertically to reorder day rows.
           </Box>
-        </Paper>
-      )}
+          <Box sx={{ p: 1.25, backgroundColor: '#FAF8F5', borderRadius: '10px', border: '1px solid #E5E0D6' }}>
+            <strong>Events:</strong> Drag cards anywhere on the routine grid to move or swap.
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

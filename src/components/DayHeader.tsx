@@ -74,22 +74,22 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
         right: isRightColumn ? 0 : 'auto',
         left: !isRightColumn ? 0 : 'auto',
         zIndex: 10,
-        padding: '12px 14px',
+        padding: '6px 8px',
         userSelect: 'none',
         cursor: 'grab',
-        width: '150px',
-        minWidth: '150px',
+        width: '105px',
+        minWidth: '105px',
         transition: 'all 0.15s ease',
         outline: isOver ? '2px solid #5B7065' : 'none',
         opacity: isDraggingMe ? 0.35 : 1,
         boxShadow: isRightColumn ? '-3px 0 6px rgba(46,51,47,0.03)' : '3px 0 6px rgba(46,51,47,0.03)',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
           <DragIndicatorIcon
             sx={{
-              fontSize: 16,
+              fontSize: 14,
               color: '#8C948D',
               cursor: 'grab',
               '&:hover': { color: '#5B7065' },
@@ -99,15 +99,15 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
           {/* Initial solid circle avatar */}
           <Box
             sx={{
-              width: 28,
-              height: 28,
-              borderRadius: '8px',
+              width: 22,
+              height: 22,
+              borderRadius: '6px',
               backgroundColor: day.isOffDay ? '#DCD6CB' : '#5B7065',
               color: day.isOffDay ? '#556058' : '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '12px',
+              fontSize: '11px',
               fontWeight: 700,
               flexShrink: 0,
             }}
@@ -120,7 +120,7 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
               variant="body2"
               sx={{
                 fontWeight: 700,
-                fontSize: '13.5px',
+                fontSize: '12px',
                 color: day.isOffDay ? '#68726A' : '#2E332F',
                 lineHeight: 1.2,
                 overflow: 'hidden',
@@ -128,7 +128,7 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
                 whiteSpace: 'nowrap',
               }}
             >
-              {day.name}
+              {day.shortName || day.name}
             </Typography>
             {day.isOffDay && (
               <Box

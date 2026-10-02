@@ -5,12 +5,13 @@ import { loadRoutineFromStorage, saveRoutineToStorage } from '../utils/storage';
 export function useRoutine() {
   const [routine, setRoutine] = useState<RoutineData>(() => {
     const loaded = loadRoutineFromStorage();
-    if (!loaded.settings || loaded.settings.dayColumnPosition !== 'left') {
+    if (!loaded.settings || loaded.settings.dayColumnPosition !== 'left' || loaded.settings.compactMode === false) {
       return {
         ...loaded,
         settings: {
           ...loaded.settings,
           dayColumnPosition: 'left',
+          compactMode: true,
         },
       };
     }

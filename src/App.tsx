@@ -187,10 +187,10 @@ export function App() {
           minHeight: '100vh',
           backgroundColor: '#FAF8F5',
           color: '#2E332F',
-          py: { xs: 3, sm: 4 },
+          py: { xs: 1.5, sm: 2 },
         }}
       >
-        <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
           {/* Header */}
           <Header
             routine={routine}
@@ -270,35 +270,27 @@ export function App() {
           <Box
             className="no-print"
             sx={{
-              mt: 4,
-              pt: 3,
+              mt: 2,
+              pt: 1.5,
               borderTop: '1px solid #EAE6DF',
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: 2,
-              fontSize: '12px',
+              gap: 1,
+              fontSize: '11px',
               color: '#747C76',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <Typography variant="caption" sx={{ fontWeight: 700, color: '#4A534C' }}>
                 RoutineCraft
-              </Typography>
-              <span>•</span>
-              <Typography variant="caption" sx={{ color: '#747C76' }}>
-                Material UI Cozy Light Theme
-              </Typography>
-              <span>•</span>
-              <Typography variant="caption" sx={{ color: '#747C76' }}>
-                Pure Client-Side
               </Typography>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="caption" sx={{ color: '#747C76' }}>
-                Shortcuts: <kbd style={{ padding: '2px 6px', borderRadius: '4px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Z</kbd> Undo / <kbd style={{ padding: '2px 6px', borderRadius: '4px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Y</kbd> Redo
+              <Typography variant="caption" sx={{ color: '#8C948D' }}>
+                <kbd style={{ padding: '1px 4px', borderRadius: '3px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Z</kbd> / <kbd style={{ padding: '1px 4px', borderRadius: '3px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Y</kbd>
               </Typography>
             </Box>
           </Box>

@@ -96,12 +96,12 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       style={{
-        padding: '8px',
+        padding: '4px',
         borderBottom: '1px solid #EAE6DF',
         borderRight: '1px solid #EAE6DF',
         verticalAlign: 'top',
-        minWidth: '180px',
-        maxWidth: '240px',
+        minWidth: '130px',
+        maxWidth: '180px',
         backgroundColor: isOver
           ? isTimeSlotDragging
             ? '#E6EFE9'
@@ -135,13 +135,12 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
           onClick={() => onAddClick(dayId, timeSlotId)}
           sx={{
             height: '100%',
-            minHeight: '82px',
-            borderRadius: '12px',
+            minHeight: '60px',
+            borderRadius: '10px',
             border: '1px dashed',
-            borderColor: isOver ? '#5B7065' : isRoutineItemDragging ? '#A4B8AB' : '#E0DBD2',
+            borderColor: isOver ? '#5B7065' : isRoutineItemDragging ? '#A4B8AB' : '#E8E3DA',
             backgroundColor: isOver ? '#E2EBE5' : isRoutineItemDragging ? '#F4F8F5' : 'transparent',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
@@ -150,28 +149,14 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
             '&:hover': {
               borderColor: '#5B7065',
               backgroundColor: '#F5F8F6',
-              '& .add-label': {
-                opacity: 1,
+              '& .add-icon': {
+                color: '#5B7065',
+                transform: 'scale(1.15)',
               },
             },
           }}
         >
-          <Box
-            className="add-label"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-              color: '#5B7065',
-              fontSize: '12px',
-              fontWeight: 700,
-              opacity: isOver ? 1 : 0,
-              transition: 'opacity 0.15s ease',
-            }}
-          >
-            <AddIcon sx={{ fontSize: 16 }} />
-            <span>{isOver ? 'Drop to place' : 'Add Event'}</span>
-          </Box>
+          <AddIcon className="add-icon" sx={{ fontSize: 16, color: '#C5BEB4', transition: 'all 0.15s ease' }} />
         </Box>
       )}
     </td>

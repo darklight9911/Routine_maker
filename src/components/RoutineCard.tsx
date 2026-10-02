@@ -61,7 +61,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
         borderColor: `${colorDef.border}50`,
         borderLeft: `4px solid ${colorDef.hex}`,
         borderRadius: '12px',
-        p: settings.compactMode ? 1 : 1.5,
+        p: settings.compactMode ? 0.75 : 1.25,
         cursor: 'grab',
         userSelect: 'none',
         textAlign: 'left',
@@ -79,11 +79,11 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
       }}
     >
       {/* Top row: Category Chip & Action Icons */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, gap: 0.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: settings.compactMode ? 0.5 : 0.75, gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.35, minWidth: 0 }}>
           <DragIndicatorIcon
             sx={{
-              fontSize: 16,
+              fontSize: 14,
               color: '#8C948D',
               cursor: 'grab',
               '&:hover': { color: '#4A534C' },
@@ -95,13 +95,13 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 0.5,
-                px: 1,
-                py: 0.25,
-                borderRadius: '6px',
+                gap: 0.35,
+                px: 0.75,
+                py: 0.15,
+                borderRadius: '4px',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #E5E0D6',
-                fontSize: '10px',
+                fontSize: '9px',
                 fontWeight: 700,
                 color: '#3B423D',
                 textTransform: 'uppercase',
@@ -110,8 +110,8 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
             >
               <Box
                 sx={{
-                  width: 6,
-                  height: 6,
+                  width: 5,
+                  height: 5,
                   borderRadius: '50%',
                   backgroundColor: colorDef.hex,
                   flexShrink: 0,
@@ -130,10 +130,10 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 0.25,
+            gap: 0.2,
           }}
         >
-          <Tooltip title="Edit event" arrow>
+          <Tooltip title="Edit" arrow>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -141,17 +141,17 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
                 onEdit(item);
               }}
               sx={{
-                p: 0.5,
+                p: 0.25,
                 color: '#637067',
                 backgroundColor: 'rgba(255,255,255,0.7)',
                 '&:hover': { backgroundColor: '#FFFFFF', color: '#5B7065' },
               }}
             >
-              <EditOutlinedIcon sx={{ fontSize: 14 }} />
+              <EditOutlinedIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Duplicate" arrow>
+          <Tooltip title="Copy" arrow>
             <IconButton
               size="small"
               onClick={(e) => {
@@ -159,13 +159,13 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
                 onDuplicate(item.id);
               }}
               sx={{
-                p: 0.5,
+                p: 0.25,
                 color: '#637067',
                 backgroundColor: 'rgba(255,255,255,0.7)',
                 '&:hover': { backgroundColor: '#FFFFFF', color: '#B87352' },
               }}
             >
-              <ContentCopyIcon sx={{ fontSize: 14 }} />
+              <ContentCopyIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
 
@@ -177,13 +177,13 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
                 onDelete(item.id);
               }}
               sx={{
-                p: 0.5,
+                p: 0.25,
                 color: '#637067',
                 backgroundColor: 'rgba(255,255,255,0.7)',
                 '&:hover': { backgroundColor: '#FFFFFF', color: '#C15C5C' },
               }}
             >
-              <DeleteOutlineIcon sx={{ fontSize: 14 }} />
+              <DeleteOutlineIcon sx={{ fontSize: 13 }} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -195,8 +195,8 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
         sx={{
           fontWeight: 700,
           color: colorDef.text,
-          lineHeight: 1.3,
-          fontSize: settings.compactMode ? '12px' : '13.5px',
+          lineHeight: 1.25,
+          fontSize: settings.compactMode ? '11.5px' : '13px',
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -212,10 +212,10 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
           sx={{
             fontFamily: '"JetBrains Mono", monospace',
             fontWeight: 600,
-            fontSize: '11px',
+            fontSize: '10px',
             color: '#637067',
             display: 'block',
-            mt: 0.25,
+            mt: 0.2,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -226,65 +226,65 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
       )}
 
       {/* Location & Instructor */}
-      <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        {settings.showLocation && item.location && (
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.5,
-              fontSize: '11px',
-              color: '#556058',
-              backgroundColor: '#FFFFFF',
-              px: 0.75,
-              py: 0.2,
-              borderRadius: '6px',
-              border: '1px solid #ECE7DE',
-              width: 'fit-content',
-              maxWidth: '100%',
-            }}
-          >
-            <PlaceOutlinedIcon sx={{ fontSize: 13, color: '#8C948D', flexShrink: 0 }} />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {item.location}
-            </span>
-          </Box>
-        )}
+      {((settings.showLocation && item.location) || (settings.showInstructor && item.instructor)) && (
+        <Box sx={{ mt: settings.compactMode ? 0.5 : 0.75, display: 'flex', flexWrap: 'wrap', gap: 0.4 }}>
+          {settings.showLocation && item.location && (
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.3,
+                fontSize: '10px',
+                color: '#556058',
+                backgroundColor: 'rgba(255,255,255,0.75)',
+                px: 0.6,
+                py: 0.15,
+                borderRadius: '4px',
+                border: '1px solid #ECE7DE',
+                maxWidth: '100%',
+              }}
+            >
+              <PlaceOutlinedIcon sx={{ fontSize: 11, color: '#8C948D', flexShrink: 0 }} />
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.location}
+              </span>
+            </Box>
+          )}
 
-        {settings.showInstructor && item.instructor && (
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.5,
-              fontSize: '11px',
-              color: '#556058',
-              backgroundColor: '#FFFFFF',
-              px: 0.75,
-              py: 0.2,
-              borderRadius: '6px',
-              border: '1px solid #ECE7DE',
-              width: 'fit-content',
-              maxWidth: '100%',
-            }}
-          >
-            <PersonOutlineIcon sx={{ fontSize: 13, color: '#8C948D', flexShrink: 0 }} />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {item.instructor}
-            </span>
-          </Box>
-        )}
-      </Box>
+          {settings.showInstructor && item.instructor && (
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.3,
+                fontSize: '10px',
+                color: '#556058',
+                backgroundColor: 'rgba(255,255,255,0.75)',
+                px: 0.6,
+                py: 0.15,
+                borderRadius: '4px',
+                border: '1px solid #ECE7DE',
+                maxWidth: '100%',
+              }}
+            >
+              <PersonOutlineIcon sx={{ fontSize: 11, color: '#8C948D', flexShrink: 0 }} />
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.instructor}
+              </span>
+            </Box>
+          )}
+        </Box>
+      )}
 
       {item.notes && !settings.compactMode && (
         <Typography
           variant="caption"
           sx={{
             display: 'block',
-            mt: 1,
-            pt: 0.5,
+            mt: 0.75,
+            pt: 0.4,
             borderTop: '1px solid #ECE7DE',
-            fontSize: '10.5px',
+            fontSize: '10px',
             fontStyle: 'italic',
             color: '#7A857D',
             overflow: 'hidden',

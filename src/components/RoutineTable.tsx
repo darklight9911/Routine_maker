@@ -158,25 +158,26 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
               {!isRightDayCol && (
                 <th
                   style={{
-                    padding: '12px 14px',
+                    padding: '6px 10px',
                     backgroundColor: '#EFEBE2',
                     borderBottom: '1px solid #E5E0D6',
                     borderRight: '1px solid #E5E0D6',
                     position: 'sticky',
                     left: 0,
                     zIndex: 30,
-                    minWidth: '150px',
+                    width: '105px',
+                    minWidth: '105px',
                     userSelect: 'none',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#2E332F', fontWeight: 700, fontSize: '13px' }}>
-                      <CalendarMonthIcon sx={{ fontSize: 18, color: '#5B7065' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: '#2E332F', fontWeight: 700, fontSize: '12px' }}>
+                      <CalendarMonthIcon sx={{ fontSize: 16, color: '#5B7065' }} />
                       <span>Days</span>
                     </Box>
                     <Tooltip title="Add Day" arrow>
-                      <IconButton size="small" onClick={onAddDayClick} className="no-export" sx={{ color: '#5B7065' }}>
-                        <AddCircleIcon sx={{ fontSize: 18 }} />
+                      <IconButton size="small" onClick={onAddDayClick} className="no-export" sx={{ p: 0.25, color: '#5B7065' }}>
+                        <AddCircleIcon sx={{ fontSize: 16 }} />
                       </IconButton>
                     </Tooltip>
                   </Box>
