@@ -5,17 +5,27 @@ import { loadRoutineFromStorage, saveRoutineToStorage } from '../utils/storage';
 export function useRoutine() {
   const [routine, setRoutine] = useState<RoutineData>(() => {
     const loaded = loadRoutineFromStorage();
-    if (!loaded.settings || loaded.settings.dayColumnPosition !== 'left' || loaded.settings.compactMode === false) {
+    const cleanedSlots = loaded.timeSlots.map((slot) => {
+      let label = slot.label;
+      if (label && /^(hour|period|block)\s*\d+$/i.test(label.trim())) {
+        label = undefined;
+      }
       return {
-        ...loaded,
-        settings: {
-          ...loaded.settings,
-          dayColumnPosition: 'left',
-          compactMode: true,
-        },
+        ...slot,
+        label,
+        breakType: slot.isBreak ? (slot.breakType || 'lunch') : slot.breakType,
       };
-    }
-    return loaded;
+    });
+
+    return {
+      ...loaded,
+      timeSlots: cleanedSlots,
+      settings: {
+        ...loaded.settings,
+        dayColumnPosition: 'left',
+        compactMode: true,
+      },
+    };
   });
   const [history, setHistory] = useState<RoutineData[]>([]);
   const [redoStack, setRedoStack] = useState<RoutineData[]>([]);

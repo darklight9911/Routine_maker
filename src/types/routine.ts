@@ -1,9 +1,12 @@
+export type BreakType = 'lunch' | 'leisure' | 'sleep' | 'dinner' | 'snack' | 'other';
+
 export interface TimeSlot {
   id: string;
   startTime: string; // "09:00"
   endTime: string;   // "10:00"
-  label?: string;    // e.g. "Slot 1", "Morning Block"
-  isBreak?: boolean; // Break / Lunch recess
+  label?: string;    // e.g. "Lunch", "Deep Work"
+  isBreak?: boolean; // Break / intermission divider
+  breakType?: BreakType; // 'lunch' | 'leisure' | 'sleep' | 'dinner' | 'snack' | 'other'
 }
 
 export interface Day {

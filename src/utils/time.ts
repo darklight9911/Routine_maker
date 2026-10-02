@@ -16,6 +16,8 @@ export function formatTimeString(time24: string, format: '12h' | '24h'): string 
   return `${hour.toString().padStart(2, '0')}:${minute} ${ampm}`;
 }
 
+export const formatTimeOnly = formatTimeString;
+
 export function formatTimeRange(start: string, end: string, format: '12h' | '24h'): string {
   if (!start && !end) return '';
   if (!end) return formatTimeString(start, format);

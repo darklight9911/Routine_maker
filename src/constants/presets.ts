@@ -1,4 +1,78 @@
-import type { RoutineData } from '../types/routine';
+import type { RoutineData, BreakType } from '../types/routine';
+
+export interface BreakTypeConfig {
+  id: BreakType;
+  label: string;
+  icon: string;
+  bg: string;
+  border: string;
+  text: string;
+  badgeBg: string;
+  description: string;
+}
+
+export const BREAK_CONFIGS: Record<BreakType, BreakTypeConfig> = {
+  lunch: {
+    id: 'lunch',
+    label: 'Lunch',
+    icon: '🍱',
+    bg: '#FAF4EB',
+    border: '#E8DCB8',
+    text: '#7A4D1A',
+    badgeBg: '#F5E6CC',
+    description: 'Midday meal & recess',
+  },
+  leisure: {
+    id: 'leisure',
+    label: 'Leisure',
+    icon: '☕',
+    bg: '#F0F5F1',
+    border: '#C3D8C8',
+    text: '#2D4F38',
+    badgeBg: '#D8E8DC',
+    description: 'Coffee, tea & relax',
+  },
+  dinner: {
+    id: 'dinner',
+    label: 'Dinner',
+    icon: '🍲',
+    bg: '#FAF0EC',
+    border: '#E8D0C5',
+    text: '#733D2A',
+    badgeBg: '#F3DACF',
+    description: 'Evening dinner & unwind',
+  },
+  sleep: {
+    id: 'sleep',
+    label: 'Sleep',
+    icon: '🌙',
+    bg: '#F2F4F8',
+    border: '#CED4E3',
+    text: '#2A3B56',
+    badgeBg: '#DCE2EF',
+    description: 'Rest & sleep period',
+  },
+  snack: {
+    id: 'snack',
+    label: 'Snack',
+    icon: '🥪',
+    bg: '#FDF7EC',
+    border: '#EBDCB4',
+    text: '#6B4F1A',
+    badgeBg: '#F7E9C8',
+    description: 'Quick snack & recharge',
+  },
+  other: {
+    id: 'other',
+    label: 'Break',
+    icon: '🧘',
+    bg: '#F6F4EE',
+    border: '#DDD6C7',
+    text: '#4F483D',
+    badgeBg: '#E9E2D4',
+    description: 'General intermission',
+  },
+};
 
 export interface ColorOption {
   id: string;
@@ -116,12 +190,12 @@ export const DEFAULT_UNIVERSITY_ROUTINE: RoutineData = {
     { id: 'day-fri', name: 'Friday', shortName: 'Fri' },
   ],
   timeSlots: [
-    { id: 'slot-1', startTime: '08:30', endTime: '09:45', label: 'Period 1' },
-    { id: 'slot-2', startTime: '10:00', endTime: '11:15', label: 'Period 2' },
-    { id: 'slot-3', startTime: '11:30', endTime: '12:45', label: 'Period 3' },
-    { id: 'slot-break', startTime: '12:45', endTime: '01:30', label: 'Lunch Recess', isBreak: true },
-    { id: 'slot-4', startTime: '01:30', endTime: '02:45', label: 'Period 4' },
-    { id: 'slot-5', startTime: '03:00', endTime: '04:15', label: 'Period 5' },
+    { id: 'slot-1', startTime: '08:30', endTime: '09:45' },
+    { id: 'slot-2', startTime: '10:00', endTime: '11:15' },
+    { id: 'slot-3', startTime: '11:30', endTime: '12:45' },
+    { id: 'slot-break', startTime: '12:45', endTime: '01:30', label: 'Lunch', isBreak: true, breakType: 'lunch' },
+    { id: 'slot-4', startTime: '01:30', endTime: '02:45' },
+    { id: 'slot-5', startTime: '03:00', endTime: '04:15' },
   ],
   items: [
     {
@@ -270,12 +344,12 @@ export const WORK_PRODUCTIVITY_ROUTINE: RoutineData = {
     { id: 'day-fri', name: 'Friday', shortName: 'Fri' },
   ],
   timeSlots: [
-    { id: 'w-1', startTime: '09:00', endTime: '10:00', label: 'Standup & Planning' },
-    { id: 'w-2', startTime: '10:00', endTime: '12:30', label: 'Focus Block 1' },
-    { id: 'w-break', startTime: '12:30', endTime: '01:30', label: 'Lunch Break', isBreak: true },
-    { id: 'w-3', startTime: '01:30', endTime: '03:30', label: 'Focus Block 2' },
-    { id: 'w-4', startTime: '03:30', endTime: '04:30', label: 'Collaboration' },
-    { id: 'w-5', startTime: '04:30', endTime: '05:30', label: 'Wrap-up & Review' },
+    { id: 'w-1', startTime: '09:00', endTime: '10:00' },
+    { id: 'w-2', startTime: '10:00', endTime: '12:30' },
+    { id: 'w-break', startTime: '12:30', endTime: '01:30', label: 'Lunch', isBreak: true, breakType: 'lunch' },
+    { id: 'w-3', startTime: '01:30', endTime: '03:30' },
+    { id: 'w-4', startTime: '03:30', endTime: '04:30' },
+    { id: 'w-5', startTime: '04:30', endTime: '05:30' },
   ],
   items: [
     {
@@ -360,13 +434,13 @@ export const BLANK_ROUTINE: RoutineData = {
     { id: 'day-sun', name: 'Sunday', shortName: 'Sun', isOffDay: true },
   ],
   timeSlots: [
-    { id: 'slot-1', startTime: '08:00', endTime: '09:00', label: 'Hour 1' },
-    { id: 'slot-2', startTime: '09:00', endTime: '10:00', label: 'Hour 2' },
-    { id: 'slot-3', startTime: '10:00', endTime: '11:00', label: 'Hour 3' },
-    { id: 'slot-4', startTime: '11:00', endTime: '12:00', label: 'Hour 4' },
-    { id: 'slot-break', startTime: '12:00', endTime: '01:00', label: 'Break', isBreak: true },
-    { id: 'slot-5', startTime: '01:00', endTime: '02:00', label: 'Hour 5' },
-    { id: 'slot-6', startTime: '02:00', endTime: '03:00', label: 'Hour 6' },
+    { id: 'slot-1', startTime: '08:00', endTime: '09:00' },
+    { id: 'slot-2', startTime: '09:00', endTime: '10:00' },
+    { id: 'slot-3', startTime: '10:00', endTime: '11:00' },
+    { id: 'slot-4', startTime: '11:00', endTime: '12:00' },
+    { id: 'slot-break', startTime: '12:00', endTime: '01:00', label: 'Lunch', isBreak: true, breakType: 'lunch' },
+    { id: 'slot-5', startTime: '01:00', endTime: '02:00' },
+    { id: 'slot-6', startTime: '02:00', endTime: '03:00' },
   ],
   items: [],
   settings: {

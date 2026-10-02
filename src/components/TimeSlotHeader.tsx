@@ -4,7 +4,6 @@ import { formatTimeRange, calculateDurationMinutes, formatDuration } from '../ut
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/Delete';
-import CoffeeIcon from '@mui/icons-material/Coffee';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -87,7 +86,7 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
         opacity: isDraggingMe ? 0.35 : 1,
       }}
     >
-      {/* Top row: Grip, Label, Break Status, Actions */}
+      {/* Top row: Grip, Custom Label (if any), Actions */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5, gap: 0.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
           <DragIndicatorIcon
@@ -100,15 +99,15 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
             }}
           />
 
-          {slot.label && (
+          {slot.label && !/^(hour|period|block)\s*\d+$/i.test(slot.label.trim()) && (
             <Typography
               variant="caption"
               sx={{
                 fontWeight: 700,
-                fontSize: '10.5px',
-                color: '#3B423D',
+                fontSize: '10px',
+                color: '#4A534C',
                 textTransform: 'uppercase',
-                letterSpacing: '0.03em',
+                letterSpacing: '0.04em',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -116,27 +115,6 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
             >
               {slot.label}
             </Typography>
-          )}
-
-          {slot.isBreak && (
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.3,
-                px: 0.7,
-                py: 0.1,
-                borderRadius: '5px',
-                backgroundColor: '#F5E6D3',
-                color: '#6E451A',
-                fontSize: '9.5px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-              }}
-            >
-              <CoffeeIcon sx={{ fontSize: 11 }} />
-              <span>Break</span>
-            </Box>
           )}
         </Box>
 

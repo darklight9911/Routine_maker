@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import type { TimeSlot } from '../types/routine';
+import type { TimeSlot, BreakType } from '../types/routine';
+import { BREAK_CONFIGS } from '../constants/presets';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -9,12 +10,10 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/Delete';
-import CoffeeIcon from '@mui/icons-material/Coffee';
-
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 
@@ -37,6 +36,15 @@ const parseTimeString = (timeStr: string): Dayjs | null => {
   return dayjs().hour(h).minute(m).second(0);
 };
 
+const BREAK_OPTIONS: { id: BreakType; label: string; icon: string }[] = [
+  { id: 'lunch', label: 'Lunch', icon: '🍱' },
+  { id: 'leisure', label: 'Leisure', icon: '☕' },
+  { id: 'dinner', label: 'Dinner', icon: '🍲' },
+  { id: 'sleep', label: 'Sleep', icon: '🌙' },
+  { id: 'snack', label: 'Snack', icon: '🥪' },
+  { id: 'other', label: 'Break', icon: '🧘' },
+];
+
 const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
   onClose,
   onSave,
@@ -47,26 +55,37 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
   const [startTime, setStartTime] = useState(initialSlot?.startTime || '09:00');
   const [endTime, setEndTime] = useState(initialSlot?.endTime || '10:00');
   const [label, setLabel] = useState(initialSlot?.label || '');
-  const [isBreak, setIsBreak] = useState(!!initialSlot?.isBreak);
+  const [slotType, setSlotType] = useState<'activity' | 'break'>(
+    initialSlot?.isBreak ? 'break' : 'activity'
+  );
+  const [breakType, setBreakType] = useState<BreakType>(
+    initialSlot?.breakType || 'lunch'
+  );
+
+  const isBreak = slotType === 'break';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!startTime || !endTime) return;
+
+    const finalLabel = label.trim() || (isBreak ? BREAK_CONFIGS[breakType]?.label || 'Break' : '');
 
     if (initialSlot) {
       onSave({
         ...initialSlot,
         startTime,
         endTime,
-        label: label.trim(),
+        label: finalLabel,
         isBreak,
+        breakType: isBreak ? breakType : undefined,
       });
     } else {
       onSave({
         startTime,
         endTime,
-        label: label.trim(),
+        label: finalLabel,
         isBreak,
+        breakType: isBreak ? breakType : undefined,
       });
     }
     onClose();
@@ -101,10 +120,10 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
       >
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F' }}>
-            {initialSlot ? 'Edit Time Slot' : 'Add Time Slot'}
+            {initialSlot ? (isBreak ? 'Edit Break Intermission' : 'Edit Time Slot') : (isBreak ? 'Add Break Intermission' : 'Add Time Slot')}
           </Typography>
           <Typography variant="caption" sx={{ color: '#7E8780' }}>
-            Set time range and optional label
+            {isBreak ? 'Set leisure, lunch, sleep, or dinner intermission' : 'Set period start and end time'}
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small" sx={{ color: '#8C948D' }}>
@@ -113,7 +132,94 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
       </DialogTitle>
 
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <DialogContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Column vs Break Intermission Toggle */}
+          <Box>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#4A534C', mb: 0.75, display: 'block' }}>
+              Column Mode
+            </Typography>
+            <ToggleButtonGroup
+              value={slotType}
+              exclusive
+              onChange={(_, val) => {
+                if (val) setSlotType(val);
+              }}
+              fullWidth
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  py: 0.75,
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  borderColor: '#E5E0D6',
+                  color: '#637067',
+                  '&.Mui-selected': {
+                    backgroundColor: '#FAF5EE',
+                    color: '#B87352',
+                    borderColor: '#B87352',
+                    '&:hover': {
+                      backgroundColor: '#F7EFE4',
+                    },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="activity">Regular Column</ToggleButton>
+              <ToggleButton value="break">Break Intermission</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
+          {/* If Break Intermission, show Break Type picker */}
+          {isBreak && (
+            <Box sx={{ p: 1.5, borderRadius: '12px', backgroundColor: '#FAF8F5', border: '1px solid #E8E2D7' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#4A534C', mb: 1, display: 'block' }}>
+                Intermission Style
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1 }}>
+                {BREAK_OPTIONS.map((opt) => {
+                  const isSelected = breakType === opt.id;
+                  return (
+                    <Button
+                      key={opt.id}
+                      type="button"
+                      variant={isSelected ? 'contained' : 'outlined'}
+                      onClick={() => {
+                        setBreakType(opt.id);
+                        if (!label || BREAK_OPTIONS.some((o) => o.label === label)) {
+                          setLabel(opt.label);
+                        }
+                      }}
+                      sx={{
+                        py: 0.75,
+                        px: 0.5,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 0.25,
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        textTransform: 'none',
+                        borderRadius: '10px',
+                        backgroundColor: isSelected ? '#5B7065' : '#FFFFFF',
+                        color: isSelected ? '#FFFFFF' : '#4A534C',
+                        borderColor: isSelected ? '#5B7065' : '#E0DACE',
+                        '&:hover': {
+                          backgroundColor: isSelected ? '#4A5D53' : '#F5F2EC',
+                          borderColor: '#5B7065',
+                        },
+                      }}
+                    >
+                      <span style={{ fontSize: '16px', lineHeight: 1 }}>{opt.icon}</span>
+                      <span>{opt.label}</span>
+                    </Button>
+                  );
+                })}
+              </Box>
+            </Box>
+          )}
+
+          {/* Time Picker Controls */}
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
             <TimePicker
               label="Start Time"
@@ -172,40 +278,16 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
             />
           </Box>
 
+          {/* Optional Label */}
           <TextField
-            label="Slot Label (Optional)"
+            label={isBreak ? 'Break Title (Optional)' : 'Slot Title (Optional)'}
             size="small"
             fullWidth
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            placeholder="e.g. Period 1, Morning Block"
-            slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            placeholder={isBreak ? 'e.g. Lunch Recess, Tea Break' : 'Optional label'}
+            slotProps={{ input: { sx: { borderRadius: '12px', fontSize: '13px' } } }}
           />
-
-          <Box
-            sx={{
-              p: 1.5,
-              borderRadius: '12px',
-              border: '1px solid #EAE4D8',
-              backgroundColor: '#FAF5EE',
-            }}
-          >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isBreak}
-                  onChange={(e) => setIsBreak(e.target.checked)}
-                  sx={{ color: '#B87352', '&.Mui-checked': { color: '#B87352' } }}
-                />
-              }
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '13px', fontWeight: 600, color: '#4B382A' }}>
-                  <CoffeeIcon sx={{ fontSize: 18, color: '#B87352' }} />
-                  <span>Mark as Lunch / Recess Break</span>
-                </Box>
-              }
-            />
-          </Box>
         </DialogContent>
 
         <DialogActions
@@ -223,7 +305,7 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
                 onDelete(initialSlot.id);
                 onClose();
               }}
-              sx={{ color: '#C15C5C' }}
+              sx={{ color: '#C15C5C', fontSize: '12px' }}
             >
               Delete
             </Button>
@@ -232,16 +314,15 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
           )}
 
           <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#D8D2C7', color: '#68726A' }}>
+            <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#D8D2C7', color: '#68726A', fontSize: '12px' }}>
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
-              color="primary"
-              sx={{ backgroundColor: '#5B7065', fontWeight: 700 }}
+              sx={{ backgroundColor: '#5B7065', fontWeight: 700, fontSize: '12px', '&:hover': { backgroundColor: '#4A5D53' } }}
             >
-              {initialSlot ? 'Update Slot' : 'Add Slot'}
+              {initialSlot ? 'Save Changes' : (isBreak ? 'Add Break' : 'Add Column')}
             </Button>
           </Box>
         </DialogActions>
@@ -254,3 +335,5 @@ export const TimeSlotModal: React.FC<TimeSlotModalProps> = (props) => {
   if (!props.isOpen) return null;
   return <TimeSlotModalContent key={props.initialSlot?.id || 'new'} {...props} />;
 };
+
+export default TimeSlotModal;
