@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import type { TimeSlot, RoutineSettings, DragState } from '../types/routine';
 import { BREAK_CONFIGS } from '../constants/presets';
-import { formatTimeOnly } from '../utils/time';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 interface BreakHeaderProps {
   slot: TimeSlot;
@@ -26,7 +24,6 @@ interface BreakHeaderProps {
 
 export const BreakHeader: React.FC<BreakHeaderProps> = ({
   slot,
-  settings,
   dragState,
   onDragStart,
   onDragEnd,
@@ -39,8 +36,6 @@ export const BreakHeader: React.FC<BreakHeaderProps> = ({
   const canDropHere = dragState.type === 'time-slot' && dragState.sourceId !== slot.id;
 
   const breakConfig = BREAK_CONFIGS[slot.breakType || 'lunch'] || BREAK_CONFIGS.other;
-  const startFmt = formatTimeOnly(slot.startTime, settings.timeFormat);
-  const endFmt = formatTimeOnly(slot.endTime, settings.timeFormat);
 
   return (
     <th
@@ -68,20 +63,22 @@ export const BreakHeader: React.FC<BreakHeaderProps> = ({
       }}
       style={{
         backgroundColor: breakConfig.bg,
-        borderBottom: '1px solid #E5E0D6',
+        borderBottom: 'none',
         borderLeft: `1px dashed ${breakConfig.border}`,
         borderRight: `1px dashed ${breakConfig.border}`,
-        padding: '4px 3px',
+        padding: '4px 2px',
         textAlign: 'center',
         userSelect: 'none',
-        width: '52px',
-        minWidth: '52px',
-        maxWidth: '52px',
+        width: '46px',
+        minWidth: '46px',
+        maxWidth: '46px',
+        height: '52px',
         cursor: 'grab',
         transition: 'all 0.15s ease',
         outline: isOver ? '2px dashed #B87352' : 'none',
         outlineOffset: '-2px',
         opacity: isDraggingMe ? 0.35 : 1,
+        verticalAlign: 'middle',
       }}
     >
       <Box
@@ -89,74 +86,28 @@ export const BreakHeader: React.FC<BreakHeaderProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 0.25,
+          justifyContent: 'center',
+          height: '100%',
           position: 'relative',
+          gap: 0.5,
           '&:hover .break-actions': {
             opacity: 1,
           },
         }}
       >
-        {/* Top grip & icon */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.2 }}>
-          <DragIndicatorIcon
-            sx={{
-              fontSize: 11,
-              color: '#8C948D',
-              cursor: 'grab',
-              transform: 'rotate(90deg)',
-              '&:hover': { color: breakConfig.text },
-            }}
-          />
-          <span style={{ fontSize: '13px', lineHeight: 1 }}>{breakConfig.icon}</span>
-        </Box>
-
-        {/* Break Label Badge */}
-        <Box
+        {/* Grip indicator */}
+        <DragIndicatorIcon
           sx={{
-            px: 0.4,
-            py: 0.1,
-            borderRadius: '4px',
-            backgroundColor: breakConfig.badgeBg,
-            fontSize: '9px',
-            fontWeight: 800,
-            color: breakConfig.text,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            maxWidth: '46px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            fontSize: 13,
+            color: '#8C948D',
+            cursor: 'grab',
+            transform: 'rotate(90deg)',
+            '&:hover': { color: breakConfig.text },
           }}
-        >
-          {slot.label || breakConfig.label}
-        </Box>
+        />
 
-        {/* Time range compact stack */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1 }}>
-          <Typography
-            variant="caption"
-            sx={{
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: '8.5px',
-              fontWeight: 700,
-              color: breakConfig.text,
-              lineHeight: 1.1,
-            }}
-          >
-            {startFmt}
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: '8px',
-              color: '#8A8275',
-              lineHeight: 1,
-            }}
-          >
-            {endFmt}
-          </Typography>
-        </Box>
+        {/* Break Icon */}
+        <span style={{ fontSize: '15px', lineHeight: 1 }}>{breakConfig.icon}</span>
 
         {/* Hover Micro Action Buttons */}
         <Box
@@ -164,7 +115,7 @@ export const BreakHeader: React.FC<BreakHeaderProps> = ({
           sx={{
             position: 'absolute',
             top: -2,
-            right: -2,
+            right: -4,
             display: 'flex',
             alignItems: 'center',
             gap: 0.1,
@@ -174,6 +125,7 @@ export const BreakHeader: React.FC<BreakHeaderProps> = ({
             borderRadius: '4px',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             p: 0.1,
+            zIndex: 10,
           }}
         >
           <Tooltip title="Edit break" arrow>

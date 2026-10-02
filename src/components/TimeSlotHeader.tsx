@@ -86,37 +86,17 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
         opacity: isDraggingMe ? 0.35 : 1,
       }}
     >
-      {/* Top row: Grip, Custom Label (if any), Actions */}
+      {/* Top row: Grip & Actions */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5, gap: 0.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
-          <DragIndicatorIcon
-            sx={{
-              fontSize: 14,
-              color: '#8C948D',
-              cursor: 'grab',
-              transform: 'rotate(90deg)',
-              '&:hover': { color: '#5B7065' },
-            }}
-          />
-
-          {slot.label && !/^(hour|period|block)\s*\d+$/i.test(slot.label.trim()) && (
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: 700,
-                fontSize: '10px',
-                color: '#4A534C',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {slot.label}
-            </Typography>
-          )}
-        </Box>
+        <DragIndicatorIcon
+          sx={{
+            fontSize: 14,
+            color: '#8C948D',
+            cursor: 'grab',
+            transform: 'rotate(90deg)',
+            '&:hover': { color: '#5B7065' },
+          }}
+        />
 
         {/* Action icons & WCAG single-pointer reorder buttons */}
         <Box

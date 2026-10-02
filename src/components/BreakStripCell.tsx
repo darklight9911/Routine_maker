@@ -22,7 +22,7 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
 
   return (
     <Tooltip
-      title={`${breakTitle} (${slot.startTime} – ${slot.endTime}) • Click to customize`}
+      title={`${breakTitle} • Click to customize`}
       arrow
       placement="top"
     >
@@ -30,13 +30,14 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
         rowSpan={rowSpan}
         onClick={() => onEditSlot(slot)}
         style={{
-          width: '52px',
-          minWidth: '52px',
-          maxWidth: '52px',
-          padding: '8px 2px',
+          width: '46px',
+          minWidth: '46px',
+          maxWidth: '46px',
+          padding: '6px 2px',
           backgroundColor: breakConfig.bg,
           borderLeft: `1px dashed ${breakConfig.border}`,
           borderRight: `1px dashed ${breakConfig.border}`,
+          borderTop: 'none',
           borderBottom: '1px solid #EAE6DF',
           textAlign: 'center',
           verticalAlign: 'middle',
@@ -68,8 +69,8 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
           {/* Top: Icon in soft pill */}
           <Box
             sx={{
-              width: 28,
-              height: 28,
+              width: 26,
+              height: 26,
               borderRadius: '50%',
               backgroundColor: '#FFFFFF',
               boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
@@ -77,7 +78,7 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '14px',
+              fontSize: '13px',
               flexShrink: 0,
             }}
           >
@@ -104,7 +105,7 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
             </Typography>
           </Box>
 
-          {/* Bottom: Time range or edit indicator */}
+          {/* Bottom: Subtle edit indicator on hover */}
           <Box
             sx={{
               display: 'flex',
@@ -116,7 +117,7 @@ export const BreakStripCell: React.FC<BreakStripCellProps> = ({
             <Box
               className="break-edit-hint"
               sx={{
-                opacity: 0.5,
+                opacity: 0.4,
                 transition: 'opacity 0.15s ease',
                 display: 'flex',
                 alignItems: 'center',
