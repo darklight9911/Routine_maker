@@ -17,7 +17,7 @@ export function loadRoutineFromStorage(): RoutineData {
         settings: {
           ...DEFAULT_UNIVERSITY_ROUTINE.settings,
           ...(parsed.settings || {}),
-          dayColumnPosition: parsed.settings?.dayColumnPosition || 'right',
+          dayColumnPosition: parsed.settings?.dayColumnPosition || 'left',
         },
       };
     }

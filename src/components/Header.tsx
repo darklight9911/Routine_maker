@@ -466,7 +466,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
             >
               <ViewWeekIcon sx={{ fontSize: 13, color: '#B87352' }} />
-              <span>Rightmost Column: Days</span>
+              <span>{routine.settings.dayColumnPosition === 'left' ? 'Leftmost Column: Days' : 'Rightmost Column: Days'}</span>
             </Box>
           </Box>
           <Typography variant="caption" sx={{ color: '#7E8780', fontFamily: '"JetBrains Mono", monospace' }}>

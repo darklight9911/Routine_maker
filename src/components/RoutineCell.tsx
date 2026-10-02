@@ -13,6 +13,8 @@ interface RoutineCellProps {
   onDragStartItem: (itemId: string, dayId: string, timeSlotId: string) => void;
   onDragEndItem: () => void;
   onDropItemToCell: (dayId: string, timeSlotId: string) => void;
+  onDropTimeSlot?: (targetSlotId: string) => void;
+  onDropDay?: (targetDayId: string) => void;
   onEditItem: (item: RoutineItem) => void;
   onDuplicateItem: (itemId: string) => void;
   onDeleteItem: (itemId: string) => void;
@@ -30,6 +32,8 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   onDragStartItem,
   onDragEndItem,
   onDropItemToCell,
+  onDropTimeSlot,
+  onDropDay,
   onEditItem,
   onDuplicateItem,
   onDeleteItem,
@@ -40,6 +44,8 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   const [isOver, setIsOver] = useState(false);
 
   const isRoutineItemDragging = dragState.type === 'routine-item';
+  const isTimeSlotDragging = dragState.type === 'time-slot' && dragState.sourceId !== timeSlotId;
+  const isDayDragging = dragState.type === 'day-row' && dragState.sourceId !== dayId;
   const isThisItemDragging = isRoutineItemDragging && dragState.sourceId === item?.id;
 
   // Filter check
@@ -61,7 +67,7 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   }
 
   const handleDragOver = (e: React.DragEvent) => {
-    if (isRoutineItemDragging) {
+    if (isRoutineItemDragging || isTimeSlotDragging || isDayDragging) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
       setIsOver(true);
@@ -75,7 +81,11 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsOver(false);
-    if (isRoutineItemDragging) {
+    if (isTimeSlotDragging && onDropTimeSlot) {
+      onDropTimeSlot(timeSlotId);
+    } else if (isDayDragging && onDropDay) {
+      onDropDay(dayId);
+    } else if (isRoutineItemDragging) {
       onDropItemToCell(dayId, timeSlotId);
     }
   };
@@ -92,7 +102,13 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
         verticalAlign: 'top',
         minWidth: '180px',
         maxWidth: '240px',
-        backgroundColor: isOver ? '#EBF2ED' : '#FFFFFF',
+        backgroundColor: isOver
+          ? isTimeSlotDragging
+            ? '#E6EFE9'
+            : isDayDragging
+            ? '#F4EFEB'
+            : '#EBF2ED'
+          : '#FFFFFF',
         outline: isOver ? '2px solid #5B7065' : 'none',
         outlineOffset: '-2px',
         transition: 'background-color 0.15s ease',

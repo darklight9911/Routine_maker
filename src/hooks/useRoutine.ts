@@ -3,7 +3,19 @@ import type { RoutineData, RoutineItem, Day, TimeSlot, RoutineSettings, DragStat
 import { loadRoutineFromStorage, saveRoutineToStorage } from '../utils/storage';
 
 export function useRoutine() {
-  const [routine, setRoutine] = useState<RoutineData>(() => loadRoutineFromStorage());
+  const [routine, setRoutine] = useState<RoutineData>(() => {
+    const loaded = loadRoutineFromStorage();
+    if (!loaded.settings || loaded.settings.dayColumnPosition !== 'left') {
+      return {
+        ...loaded,
+        settings: {
+          ...loaded.settings,
+          dayColumnPosition: 'left',
+        },
+      };
+    }
+    return loaded;
+  });
   const [history, setHistory] = useState<RoutineData[]>([]);
   const [redoStack, setRedoStack] = useState<RoutineData[]>([]);
   

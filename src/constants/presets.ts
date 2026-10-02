@@ -247,7 +247,7 @@ export const DEFAULT_UNIVERSITY_ROUTINE: RoutineData = {
     },
   ],
   settings: {
-    dayColumnPosition: 'right', // User explicit requirement: rightmost column will be days
+    dayColumnPosition: 'left', // User explicit requirement: rightmost column will be days
     theme: 'indigo',
     darkMode: false, // Light theme only
     compactMode: false,
@@ -335,7 +335,7 @@ export const WORK_PRODUCTIVITY_ROUTINE: RoutineData = {
     },
   ],
   settings: {
-    dayColumnPosition: 'right',
+    dayColumnPosition: 'left',
     theme: 'emerald',
     darkMode: false,
     compactMode: false,
@@ -370,7 +370,7 @@ export const BLANK_ROUTINE: RoutineData = {
   ],
   items: [],
   settings: {
-    dayColumnPosition: 'right',
+    dayColumnPosition: 'left',
     theme: 'indigo',
     darkMode: false,
     compactMode: false,

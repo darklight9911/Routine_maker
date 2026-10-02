@@ -265,10 +265,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             </Typography>
             <Button
               size="small"
-              variant={settings.dayColumnPosition === 'right' ? 'contained' : 'outlined'}
+              variant={settings.dayColumnPosition === 'left' ? 'contained' : 'outlined'}
               onClick={() =>
                 onUpdateSettings({
-                  dayColumnPosition: settings.dayColumnPosition === 'right' ? 'left' : 'right',
+                  dayColumnPosition: settings.dayColumnPosition === 'left' ? 'right' : 'left',
                 })
               }
               startIcon={<SwapHorizIcon />}
@@ -276,16 +276,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                 fontSize: '11.5px',
                 py: 0.4,
                 px: 1.2,
-                backgroundColor: settings.dayColumnPosition === 'right' ? '#F0F5F1' : 'transparent',
-                color: settings.dayColumnPosition === 'right' ? '#3B4E43' : '#68726A',
+                backgroundColor: settings.dayColumnPosition === 'left' ? '#F0F5F1' : 'transparent',
+                color: settings.dayColumnPosition === 'left' ? '#3B4E43' : '#68726A',
                 border: '1px solid',
-                borderColor: settings.dayColumnPosition === 'right' ? '#8FA395' : '#D8D2C7',
+                borderColor: settings.dayColumnPosition === 'left' ? '#8FA395' : '#D8D2C7',
                 '&:hover': {
                   backgroundColor: '#E2EBE5',
                 },
               }}
             >
-              {settings.dayColumnPosition === 'right' ? 'Rightmost (Default)' : 'Left'}
+              {settings.dayColumnPosition === 'left' ? 'Leftmost (Default)' : 'Right'}
             </Button>
           </Box>
 
