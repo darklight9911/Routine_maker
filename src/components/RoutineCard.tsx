@@ -1,7 +1,16 @@
 import type React from 'react';
 import type { RoutineItem, RoutineSettings } from '../types/routine';
 import { COLOR_PALETTE } from '../constants/presets';
-import { GripVertical, Edit2, Copy, Trash2, MapPin, User } from 'lucide-react';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
+import PersonOutlineIcon from '@mui/icons-material/Person';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 interface RoutineCardProps {
   item: RoutineItem;
@@ -29,24 +38,13 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
   const colorDef = COLOR_PALETTE.find((c) => c.id === item.color) || COLOR_PALETTE[0];
 
   return (
-    <div
+    <Box
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       tabIndex={0}
       role="button"
       aria-label={`Routine event: ${item.title}`}
-      className={`group relative rounded-xl border border-slate-200/90 dark:border-slate-800/80 p-3 transition-all duration-200 cursor-grab active:cursor-grabbing select-none text-left shadow-xs hover:shadow-md hover:-translate-y-0.5 ${
-        colorDef.bgLight
-      } ${colorDef.bgDark} ${
-        isDragging ? 'opacity-40 scale-95 ring-2 ring-indigo-500 shadow-xl' : 'opacity-100'
-      } ${!isHighlighted ? 'opacity-25 grayscale' : ''} ${
-        settings.compactMode ? 'p-2 text-xs' : ''
-      }`}
-      style={{
-        borderLeftWidth: '4px',
-        borderLeftColor: colorDef.hex,
-      }}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('button')) return;
         onEdit(item);
@@ -57,106 +55,246 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
           onEdit(item);
         }
       }}
+      sx={{
+        backgroundColor: colorDef.bg,
+        border: '1px solid',
+        borderColor: `${colorDef.border}50`,
+        borderLeft: `4px solid ${colorDef.hex}`,
+        borderRadius: '12px',
+        p: settings.compactMode ? 1 : 1.5,
+        cursor: 'grab',
+        userSelect: 'none',
+        textAlign: 'left',
+        transition: 'all 0.15s ease',
+        boxShadow: '0 1px 3px rgba(46, 51, 47, 0.05)',
+        opacity: isDragging ? 0.35 : !isHighlighted ? 0.25 : 1,
+        transform: isDragging ? 'scale(0.96)' : 'none',
+        '&:hover': {
+          boxShadow: '0 4px 10px rgba(46, 51, 47, 0.08)',
+          borderColor: colorDef.border,
+        },
+        '&:active': {
+          cursor: 'grabbing',
+        },
+      }}
     >
-      {/* Top row: Category tag, Color dot, and Micro-actions */}
-      <div className="flex items-center justify-between gap-1 mb-1.5">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span
-            className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing transition-colors"
-            title="Drag anywhere to move or swap"
-          >
-            <GripVertical className="w-3.5 h-3.5" />
-          </span>
+      {/* Top row: Category Chip & Action Icons */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
+          <DragIndicatorIcon
+            sx={{
+              fontSize: 16,
+              color: '#8C948D',
+              cursor: 'grab',
+              '&:hover': { color: '#4A534C' },
+            }}
+          />
 
           {settings.showCategory && item.category && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-white/10 shadow-2xs backdrop-blur-xs truncate text-slate-700 dark:text-slate-300">
-              <span
-                className="w-1.5 h-1.5 rounded-full shrink-0"
-                style={{ backgroundColor: colorDef.hex }}
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1,
+                py: 0.25,
+                borderRadius: '6px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E0D6',
+                fontSize: '10px',
+                fontWeight: 700,
+                color: '#3B423D',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              <Box
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  backgroundColor: colorDef.hex,
+                  flexShrink: 0,
+                }}
               />
-              <span className="truncate">{item.category}</span>
-            </span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {item.category}
+              </span>
+            </Box>
           )}
-        </div>
+        </Box>
 
-        {/* Action icons on hover or focus */}
-        <div className="flex items-center gap-0.5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity no-export">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(item);
-            }}
-            className="p-1 rounded-md bg-white/90 dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-500 hover:text-indigo-600 shadow-2xs transition-colors cursor-pointer"
-            title="Edit event"
-            aria-label="Edit event"
-          >
-            <Edit2 className="w-3 h-3" />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDuplicate(item.id);
-            }}
-            className="p-1 rounded-md bg-white/90 dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-600 shadow-2xs transition-colors cursor-pointer"
-            title="Duplicate event"
-            aria-label="Duplicate event"
-          >
-            <Copy className="w-3 h-3" />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(item.id);
-            }}
-            className="p-1 rounded-md bg-white/90 dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-slate-700 text-slate-500 hover:text-rose-600 shadow-2xs transition-colors cursor-pointer"
-            title="Delete event"
-            aria-label="Delete event"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
+        {/* Micro action toolbar */}
+        <Box
+          className="no-export"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.25,
+          }}
+        >
+          <Tooltip title="Edit event" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(item);
+              }}
+              sx={{
+                p: 0.5,
+                color: '#637067',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                '&:hover': { backgroundColor: '#FFFFFF', color: '#5B7065' },
+              }}
+            >
+              <EditOutlinedIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Duplicate" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDuplicate(item.id);
+              }}
+              sx={{
+                p: 0.5,
+                color: '#637067',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                '&:hover': { backgroundColor: '#FFFFFF', color: '#B87352' },
+              }}
+            >
+              <ContentCopyIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(item.id);
+              }}
+              sx={{
+                p: 0.5,
+                color: '#637067',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                '&:hover': { backgroundColor: '#FFFFFF', color: '#C15C5C' },
+              }}
+            >
+              <DeleteOutlineIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
 
       {/* Main Title & Subtitle */}
-      <h4 className="font-bold text-sm sm:text-base leading-snug tracking-tight text-slate-900 dark:text-white line-clamp-2">
+      <Typography
+        variant="subtitle2"
+        sx={{
+          fontWeight: 700,
+          color: colorDef.text,
+          lineHeight: 1.3,
+          fontSize: settings.compactMode ? '12px' : '13.5px',
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
         {item.title}
-      </h4>
+      </Typography>
+
       {item.subtitle && (
-        <div className="text-[11px] font-mono font-semibold text-slate-500 dark:text-slate-400 mt-0.5 tracking-tight truncate">
+        <Typography
+          variant="caption"
+          sx={{
+            fontFamily: '"JetBrains Mono", monospace',
+            fontWeight: 600,
+            fontSize: '11px',
+            color: '#637067',
+            display: 'block',
+            mt: 0.25,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {item.subtitle}
-        </div>
+        </Typography>
       )}
 
-      {/* Meta tags (Location / Instructor) with clean pill badges */}
-      <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+      {/* Location & Instructor */}
+      <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
         {settings.showLocation && item.location && (
-          <div
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/50 dark:border-slate-700/50 truncate max-w-full"
-            title={item.location}
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontSize: '11px',
+              color: '#556058',
+              backgroundColor: '#FFFFFF',
+              px: 0.75,
+              py: 0.2,
+              borderRadius: '6px',
+              border: '1px solid #ECE7DE',
+              width: 'fit-content',
+              maxWidth: '100%',
+            }}
           >
-            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="truncate">{item.location}</span>
-          </div>
+            <PlaceOutlinedIcon sx={{ fontSize: 13, color: '#8C948D', flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {item.location}
+            </span>
+          </Box>
         )}
+
         {settings.showInstructor && item.instructor && (
-          <div
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/50 dark:border-slate-700/50 truncate max-w-full"
-            title={item.instructor}
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontSize: '11px',
+              color: '#556058',
+              backgroundColor: '#FFFFFF',
+              px: 0.75,
+              py: 0.2,
+              borderRadius: '6px',
+              border: '1px solid #ECE7DE',
+              width: 'fit-content',
+              maxWidth: '100%',
+            }}
           >
-            <User className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="truncate">{item.instructor}</span>
-          </div>
+            <PersonOutlineIcon sx={{ fontSize: 13, color: '#8C948D', flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {item.instructor}
+            </span>
+          </Box>
         )}
-      </div>
+      </Box>
 
       {item.notes && !settings.compactMode && (
-        <div className="mt-2 pt-1.5 border-t border-slate-200/60 dark:border-white/10 text-[10px] text-slate-500 dark:text-slate-400 italic line-clamp-1">
+        <Typography
+          variant="caption"
+          sx={{
+            display: 'block',
+            mt: 1,
+            pt: 0.5,
+            borderTop: '1px solid #ECE7DE',
+            fontSize: '10.5px',
+            fontStyle: 'italic',
+            color: '#7A857D',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {item.notes}
-        </div>
+        </Typography>
       )}
-    </div>
+    </Box>
   );
 };

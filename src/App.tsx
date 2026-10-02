@@ -9,6 +9,12 @@ import { TimeSlotModal } from './components/TimeSlotModal';
 import { DayModal } from './components/DayModal';
 import { TemplatesModal } from './components/TemplatesModal';
 import { StatsDrawer } from './components/StatsDrawer';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { cozyTheme } from './theme';
 
 export function App() {
   const {
@@ -171,143 +177,173 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 aurora-bg grid-pattern">
-      <div className="max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Navigation & Header */}
-        <Header
-          routine={routine}
-          onUpdateTitle={updateTitle}
-          onUndo={undo}
-          onRedo={redo}
-          canUndo={historyLength > 0}
-          canRedo={redoLength > 0}
-          onOpenTemplates={() => setTemplatesModalOpen(true)}
-          onToggleDarkMode={() =>
-            updateSettings({ darkMode: !routine.settings.darkMode })
-          }
-          isDarkMode={routine.settings.darkMode}
-          onImportRoutine={setFullRoutine}
-        />
-
-        {/* Toolbar & Controls */}
-        <Toolbar
-          settings={routine.settings}
-          onUpdateSettings={updateSettings}
-          searchFilter={searchFilter}
-          onSearchChange={setSearchFilter}
-          categoryFilter={categoryFilter}
-          onCategoryChange={setCategoryFilter}
-          onAddItemClick={() => handleOpenAddItem()}
-          onAddTimeSlotClick={handleOpenAddTimeSlot}
-          onAddDayClick={handleOpenAddDay}
-          onOpenStats={() => setStatsDrawerOpen(true)}
-          onClearAll={clearAllItems}
-          totalFilteredCount={filteredItemsCount}
-          totalItemsCount={routine.items.length}
-        />
-
-        {/* Exportable Container */}
-        <div id="routine-export-container" className="p-1">
-          {/* Header visible when printed or captured as image */}
-          <div className="hidden print:block mb-4 text-center">
-            <h1 className="text-2xl font-bold text-slate-900">{routine.title}</h1>
-            {routine.subtitle && (
-              <p className="text-sm text-slate-600 mt-1">{routine.subtitle}</p>
-            )}
-          </div>
-
-          {/* Interactive Timetable Grid */}
-          <RoutineTable
+    <ThemeProvider theme={cozyTheme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: '100vh',
+          backgroundColor: '#FAF8F5',
+          color: '#2E332F',
+          py: { xs: 3, sm: 4 },
+        }}
+      >
+        <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
+          {/* Header */}
+          <Header
             routine={routine}
-            dragState={dragState}
-            onDragStartTimeSlot={(slotId) => startDrag('time-slot', slotId)}
-            onDragEndTimeSlot={endDrag}
-            onDropTimeSlot={dropTimeSlot}
-            onEditTimeSlot={handleEditTimeSlot}
-            onDeleteTimeSlot={deleteTimeSlot}
-            onMoveTimeSlot={moveTimeSlot}
-            onDragStartDay={(dayId) => startDrag('day-row', dayId)}
-            onDragEndDay={endDrag}
-            onDropDay={dropDay}
-            onEditDay={handleEditDay}
-            onDeleteDay={deleteDay}
-            onMoveDay={moveDay}
-            onDragStartItem={(itemId, dayId, slotId) =>
-              startDrag('routine-item', itemId, dayId, slotId)
-            }
-            onDragEndItem={endDrag}
-            onDropItemToCell={dropRoutineItemToCell}
-            onEditItem={handleEditItem}
-            onDuplicateItem={duplicateItem}
-            onDeleteItem={deleteItem}
-            onAddCellItem={handleOpenAddItem}
+            onUpdateTitle={updateTitle}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={historyLength > 0}
+            canRedo={redoLength > 0}
+            onOpenTemplates={() => setTemplatesModalOpen(true)}
+            onImportRoutine={setFullRoutine}
+          />
+
+          {/* Toolbar */}
+          <Toolbar
+            settings={routine.settings}
+            onUpdateSettings={updateSettings}
+            searchFilter={searchFilter}
+            onSearchChange={setSearchFilter}
+            categoryFilter={categoryFilter}
+            onCategoryChange={setCategoryFilter}
+            onAddItemClick={() => handleOpenAddItem()}
             onAddTimeSlotClick={handleOpenAddTimeSlot}
             onAddDayClick={handleOpenAddDay}
-            searchFilter={searchFilter}
-            categoryFilter={categoryFilter}
+            onOpenStats={() => setStatsDrawerOpen(true)}
+            onClearAll={clearAllItems}
+            totalFilteredCount={filteredItemsCount}
+            totalItemsCount={routine.items.length}
           />
-        </div>
 
-        {/* Footer */}
-        <footer className="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-between gap-3 no-print">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700 dark:text-slate-300">RoutineCraft</span>
-            <span>•</span>
-            <span>Pure Client-Side (No Backend Required)</span>
-            <span>•</span>
-            <span className="text-indigo-600 dark:text-indigo-400 font-medium">UI/UX Pro Max Design System</span>
-          </div>
+          {/* Exportable Container */}
+          <Box id="routine-export-container">
+            {/* Header visible when printed or captured as image */}
+            <Box className="hidden print:block" sx={{ mb: 2, textAlign: 'center' }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#2E332F' }}>
+                {routine.title}
+              </Typography>
+              {routine.subtitle && (
+                <Typography variant="body2" sx={{ color: '#68726A', mt: 0.5 }}>
+                  {routine.subtitle}
+                </Typography>
+              )}
+            </Box>
 
-          <div className="flex items-center gap-3">
-            <span>
-              Shortcuts: <kbd className="px-1.5 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 font-mono text-[10px] shadow-2xs">Ctrl+Z</kbd> Undo / <kbd className="px-1.5 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 font-mono text-[10px] shadow-2xs">Ctrl+Y</kbd> Redo
-            </span>
-          </div>
-        </footer>
-      </div>
+            {/* Interactive Timetable Grid */}
+            <RoutineTable
+              routine={routine}
+              dragState={dragState}
+              onDragStartTimeSlot={(slotId) => startDrag('time-slot', slotId)}
+              onDragEndTimeSlot={endDrag}
+              onDropTimeSlot={dropTimeSlot}
+              onEditTimeSlot={handleEditTimeSlot}
+              onDeleteTimeSlot={deleteTimeSlot}
+              onMoveTimeSlot={moveTimeSlot}
+              onDragStartDay={(dayId) => startDrag('day-row', dayId)}
+              onDragEndDay={endDrag}
+              onDropDay={dropDay}
+              onEditDay={handleEditDay}
+              onDeleteDay={deleteDay}
+              onMoveDay={moveDay}
+              onDragStartItem={(itemId, dayId, slotId) =>
+                startDrag('routine-item', itemId, dayId, slotId)
+              }
+              onDragEndItem={endDrag}
+              onDropItemToCell={dropRoutineItemToCell}
+              onEditItem={handleEditItem}
+              onDuplicateItem={duplicateItem}
+              onDeleteItem={deleteItem}
+              onAddCellItem={handleOpenAddItem}
+              onAddTimeSlotClick={handleOpenAddTimeSlot}
+              onAddDayClick={handleOpenAddDay}
+              searchFilter={searchFilter}
+              categoryFilter={categoryFilter}
+            />
+          </Box>
 
-      {/* Modals & Drawers */}
-      <ItemModal
-        isOpen={itemModalOpen}
-        onClose={() => setItemModalOpen(false)}
-        onSave={handleSaveItem}
-        onDelete={deleteItem}
-        initialItem={editingItem}
-        defaultDayId={selectedDayId}
-        defaultTimeSlotId={selectedSlotId}
-        days={routine.days}
-        timeSlots={routine.timeSlots}
-        settings={routine.settings}
-      />
+          {/* Footer */}
+          <Box
+            className="no-print"
+            sx={{
+              mt: 4,
+              pt: 3,
+              borderTop: '1px solid #EAE6DF',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 2,
+              fontSize: '12px',
+              color: '#747C76',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#4A534C' }}>
+                RoutineCraft
+              </Typography>
+              <span>•</span>
+              <Typography variant="caption" sx={{ color: '#747C76' }}>
+                Material UI Cozy Light Theme
+              </Typography>
+              <span>•</span>
+              <Typography variant="caption" sx={{ color: '#747C76' }}>
+                Pure Client-Side
+              </Typography>
+            </Box>
 
-      <TimeSlotModal
-        isOpen={timeSlotModalOpen}
-        onClose={() => setTimeSlotModalOpen(false)}
-        onSave={handleSaveTimeSlot}
-        onDelete={deleteTimeSlot}
-        initialSlot={editingTimeSlot}
-      />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="caption" sx={{ color: '#747C76' }}>
+                Shortcuts: <kbd style={{ padding: '2px 6px', borderRadius: '4px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Z</kbd> Undo / <kbd style={{ padding: '2px 6px', borderRadius: '4px', backgroundColor: '#EDE9E1', border: '1px solid #DFDAD0' }}>Ctrl+Y</kbd> Redo
+              </Typography>
+            </Box>
+          </Box>
+        </Container>
 
-      <DayModal
-        isOpen={dayModalOpen}
-        onClose={() => setDayModalOpen(false)}
-        onSave={handleSaveDay}
-        onDelete={deleteDay}
-        initialDay={editingDay}
-      />
+        {/* Modals & Drawers */}
+        <ItemModal
+          isOpen={itemModalOpen}
+          onClose={() => setItemModalOpen(false)}
+          onSave={handleSaveItem}
+          onDelete={deleteItem}
+          initialItem={editingItem}
+          defaultDayId={selectedDayId}
+          defaultTimeSlotId={selectedSlotId}
+          days={routine.days}
+          timeSlots={routine.timeSlots}
+          settings={routine.settings}
+        />
 
-      <TemplatesModal
-        isOpen={templatesModalOpen}
-        onClose={() => setTemplatesModalOpen(false)}
-        onSelectTemplate={setFullRoutine}
-      />
+        <TimeSlotModal
+          isOpen={timeSlotModalOpen}
+          onClose={() => setTimeSlotModalOpen(false)}
+          onSave={handleSaveTimeSlot}
+          onDelete={deleteTimeSlot}
+          initialSlot={editingTimeSlot}
+        />
 
-      <StatsDrawer
-        isOpen={statsDrawerOpen}
-        onClose={() => setStatsDrawerOpen(false)}
-        routine={routine}
-      />
-    </div>
+        <DayModal
+          isOpen={dayModalOpen}
+          onClose={() => setDayModalOpen(false)}
+          onSave={handleSaveDay}
+          onDelete={deleteDay}
+          initialDay={editingDay}
+        />
+
+        <TemplatesModal
+          isOpen={templatesModalOpen}
+          onClose={() => setTemplatesModalOpen(false)}
+          onSelectTemplate={setFullRoutine}
+        />
+
+        <StatsDrawer
+          isOpen={statsDrawerOpen}
+          onClose={() => setStatsDrawerOpen(false)}
+          routine={routine}
+        />
+      </Box>
+    </ThemeProvider>
   );
 }
 

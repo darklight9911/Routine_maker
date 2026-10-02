@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import type { Day } from '../types/routine';
-import { X, Calendar, Trash2 } from 'lucide-react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
 
 interface DayModalProps {
   isOpen: boolean;
@@ -51,112 +63,136 @@ const DayModalContent: React.FC<Omit<DayModalProps, 'isOpen'>> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div
-        className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog
+      open
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: '20px',
+            border: '1px solid #E5E0D6',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 16px 40px rgba(46,51,47,0.1)',
+          },
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          m: 0,
+          p: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #EFECE6',
+        }}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-              <Calendar className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {initialDay ? 'Edit Day' : 'Add Day'}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Configure day row in your timetable
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F' }}>
+            {initialDay ? 'Edit Day' : 'Add Day'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#7E8780' }}>
+            Configure timetable day row
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose} size="small" sx={{ color: '#8C948D' }}>
+          <CloseIcon sx={{ fontSize: 20 }} />
+        </IconButton>
+      </DialogTitle>
+
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <TextField
+            label="Day Name"
+            required
+            size="small"
+            fullWidth
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            placeholder="e.g. Saturday, Monday, Day 1"
+            slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            autoFocus
+          />
+
+          <TextField
+            label="Short Abbreviation"
+            size="small"
+            fullWidth
+            value={shortName}
+            onChange={(e) => setShortName(e.target.value)}
+            placeholder="e.g. Sat, Mon"
+            slotProps={{
+              htmlInput: { maxLength: 4 },
+              input: { sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' } },
+            }}
+          />
+
+          <Box
+            sx={{
+              p: 1.5,
+              borderRadius: '12px',
+              border: '1px solid #EAE4D8',
+              backgroundColor: '#FAF5EE',
+            }}
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Day Name <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="e.g. Saturday, Monday, Day 1"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
-              required
-              autoFocus
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isOffDay}
+                  onChange={(e) => setIsOffDay(e.target.checked)}
+                  sx={{ color: '#5B7065', '&.Mui-checked': { color: '#5B7065' } }}
+                />
+              }
+              label={
+                <Box sx={{ fontSize: '13px', fontWeight: 600, color: '#3A423D' }}>
+                  Mark as Weekend / Off Day (muted background)
+                </Box>
+              }
             />
-          </div>
+          </Box>
+        </DialogContent>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Short Abbreviation
-            </label>
-            <input
-              type="text"
-              value={shortName}
-              onChange={(e) => setShortName(e.target.value)}
-              placeholder="e.g. Sat, Mon, D1"
-              maxLength={4}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
-            />
-          </div>
+        <DialogActions
+          sx={{
+            p: 2.5,
+            borderTop: '1px solid #EFECE6',
+            justifyContent: 'space-between',
+          }}
+        >
+          {initialDay && onDelete ? (
+            <Button
+              color="error"
+              startIcon={<DeleteOutlineIcon />}
+              onClick={() => {
+                onDelete(initialDay.id);
+                onClose();
+              }}
+              sx={{ color: '#C15C5C' }}
+            >
+              Delete
+            </Button>
+          ) : (
+            <Box />
+          )}
 
-          <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-            <input
-              type="checkbox"
-              checked={isOffDay}
-              onChange={(e) => setIsOffDay(e.target.checked)}
-              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
-            />
-            <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-              Mark as Weekend / Off Day (muted background)
-            </div>
-          </label>
-
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            {initialDay && onDelete ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(initialDay.id);
-                  onClose();
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            ) : (
-              <div />
-            )}
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs transition-colors"
-              >
-                {initialDay ? 'Update Day' : 'Add Day'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#D8D2C7', color: '#68726A' }}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ backgroundColor: '#5B7065', fontWeight: 700 }}
+            >
+              {initialDay ? 'Update Day' : 'Add Day'}
+            </Button>
+          </Box>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

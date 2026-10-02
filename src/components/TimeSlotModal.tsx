@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import type { TimeSlot } from '../types/routine';
-import { X, Clock, Trash2, Coffee } from 'lucide-react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import CoffeeIcon from '@mui/icons-material/Coffee';
 
 interface TimeSlotModalProps {
   isOpen: boolean;
@@ -45,124 +58,152 @@ const TimeSlotModalContent: React.FC<Omit<TimeSlotModalProps, 'isOpen'>> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div
-        className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog
+      open
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: '20px',
+            border: '1px solid #E5E0D6',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 16px 40px rgba(46,51,47,0.1)',
+          },
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          m: 0,
+          p: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #EFECE6',
+        }}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {initialSlot ? 'Edit Time Slot' : 'Add Time Slot'}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Define the timing and label for this column
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F' }}>
+            {initialSlot ? 'Edit Time Slot' : 'Add Time Slot'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#7E8780' }}>
+            Set time range and optional label
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose} size="small" sx={{ color: '#8C948D' }}>
+          <CloseIcon sx={{ fontSize: 20 }} />
+        </IconButton>
+      </DialogTitle>
+
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+            <TextField
+              label="Start Time"
+              type="time"
+              required
+              size="small"
+              fullWidth
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              slotProps={{
+                input: { sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' } },
+                inputLabel: { shrink: true },
+              }}
+            />
+
+            <TextField
+              label="End Time"
+              type="time"
+              required
+              size="small"
+              fullWidth
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              slotProps={{
+                input: { sx: { borderRadius: '12px', fontFamily: '"JetBrains Mono", monospace' } },
+                inputLabel: { shrink: true },
+              }}
+            />
+          </Box>
+
+          <TextField
+            label="Slot Label (Optional)"
+            size="small"
+            fullWidth
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="e.g. Period 1, Morning Block"
+            slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+          />
+
+          <Box
+            sx={{
+              p: 1.5,
+              borderRadius: '12px',
+              border: '1px solid #EAE4D8',
+              backgroundColor: '#FAF5EE',
+            }}
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Start Time <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                End Time <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Slot Label (Optional)
-            </label>
-            <input
-              type="text"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. Period 1, Block A, Recess"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isBreak}
+                  onChange={(e) => setIsBreak(e.target.checked)}
+                  sx={{ color: '#B87352', '&.Mui-checked': { color: '#B87352' } }}
+                />
+              }
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '13px', fontWeight: 600, color: '#4B382A' }}>
+                  <CoffeeIcon sx={{ fontSize: 18, color: '#B87352' }} />
+                  <span>Mark as Lunch / Recess Break</span>
+                </Box>
+              }
             />
-          </div>
+          </Box>
+        </DialogContent>
 
-          <label className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-            <input
-              type="checkbox"
-              checked={isBreak}
-              onChange={(e) => setIsBreak(e.target.checked)}
-              className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
-            />
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
-              <Coffee className="w-4 h-4 text-amber-500" />
-              <span>Mark as Break / Lunch Recess</span>
-            </div>
-          </label>
+        <DialogActions
+          sx={{
+            p: 2.5,
+            borderTop: '1px solid #EFECE6',
+            justifyContent: 'space-between',
+          }}
+        >
+          {initialSlot && onDelete ? (
+            <Button
+              color="error"
+              startIcon={<DeleteOutlineIcon />}
+              onClick={() => {
+                onDelete(initialSlot.id);
+                onClose();
+              }}
+              sx={{ color: '#C15C5C' }}
+            >
+              Delete
+            </Button>
+          ) : (
+            <Box />
+          )}
 
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            {initialSlot && onDelete ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(initialSlot.id);
-                  onClose();
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            ) : (
-              <div />
-            )}
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs transition-colors"
-              >
-                {initialSlot ? 'Update Slot' : 'Add Slot'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#D8D2C7', color: '#68726A' }}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ backgroundColor: '#5B7065', fontWeight: 700 }}
+            >
+              {initialSlot ? 'Update Slot' : 'Add Slot'}
+            </Button>
+          </Box>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

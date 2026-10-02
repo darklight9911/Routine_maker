@@ -3,7 +3,16 @@ import type { RoutineData, RoutineItem, Day, TimeSlot, DragState } from '../type
 import { TimeSlotHeader } from './TimeSlotHeader';
 import { DayHeader } from './DayHeader';
 import { RoutineCell } from './RoutineCell';
-import { Calendar, PlusCircle, Clock, AlertCircle } from 'lucide-react';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 interface RoutineTableProps {
   routine: RoutineData;
@@ -64,33 +73,61 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
 
   if (routine.days.length === 0 || routine.timeSlots.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 text-center my-6 shadow-sm">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 shadow-sm">
-          <AlertCircle className="w-7 h-7" />
-        </div>
-        <h3 className="font-heading text-xl font-bold text-slate-900 dark:text-white mb-1.5">
+      <Paper
+        elevation={0}
+        sx={{
+          p: 6,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          my: 4,
+          backgroundColor: '#FFFFFF',
+          border: '1px dashed #D8D2C7',
+          borderRadius: '20px',
+        }}
+      >
+        <Box
+          sx={{
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            backgroundColor: '#F0F5F1',
+            color: '#5B7065',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2,
+          }}
+        >
+          <InfoOutlinedIcon sx={{ fontSize: 32 }} />
+        </Box>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: '#2E332F', mb: 1 }}>
           No Days or Time Slots Configured
-        </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">
-          Start by adding days of the week and time periods to organize your routine.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#68726A', mb: 3, maxWidth: 420 }}>
+          Add days of the week and time periods to start organizing your timetable routine.
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<CalendarMonthIcon />}
             onClick={onAddDayClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            <Calendar className="w-4 h-4" />
             Add Day
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ borderColor: '#D8D2C7', color: '#2E332F', '&:hover': { borderColor: '#5B7065' } }}
+            startIcon={<AccessTimeIcon />}
             onClick={onAddTimeSlotClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            <Clock className="w-4 h-4" />
             Add Time Slot
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Paper>
     );
   }
 
@@ -101,29 +138,48 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
   });
 
   return (
-    <div className="relative rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl overflow-hidden print-area">
-      {/* Scrollable table container */}
-      <div className="overflow-x-auto overflow-y-visible">
-        <table className="w-full border-collapse text-left">
+    <Paper
+      elevation={0}
+      className="print-area"
+      sx={{
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E0D6',
+        borderRadius: '18px',
+        overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(46,51,47,0.04)',
+      }}
+    >
+      <Box sx={{ overflowX: 'auto', overflowY: 'visible' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           {/* UPPER ROW: TIME SLOTS & CORNER DAY HEADER */}
           <thead>
-            <tr className="sticky top-0 z-20">
+            <tr style={{ position: 'sticky', top: 0, zIndex: 20 }}>
               {/* If day column is on LEFT, render corner here */}
               {!isRightDayCol && (
-                <th className="p-3 sm:p-4 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 bg-slate-200/95 dark:bg-slate-900/95 border-b border-r border-slate-200 dark:border-slate-800 sticky left-0 z-30 backdrop-blur-md min-w-[140px] sm:min-w-[165px]">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-heading">
-                      <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                      Days
-                    </span>
-                    <button
-                      onClick={onAddDayClick}
-                      className="p-1 rounded-md hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 no-export transition-colors cursor-pointer"
-                      title="Add new day"
-                    >
-                      <PlusCircle className="w-4 h-4" />
-                    </button>
-                  </div>
+                <th
+                  style={{
+                    padding: '12px 14px',
+                    backgroundColor: '#EFEBE2',
+                    borderBottom: '1px solid #E5E0D6',
+                    borderRight: '1px solid #E5E0D6',
+                    position: 'sticky',
+                    left: 0,
+                    zIndex: 30,
+                    minWidth: '150px',
+                    userSelect: 'none',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#2E332F', fontWeight: 700, fontSize: '13px' }}>
+                      <CalendarMonthIcon sx={{ fontSize: 18, color: '#5B7065' }} />
+                      <span>Days</span>
+                    </Box>
+                    <Tooltip title="Add Day" arrow>
+                      <IconButton size="small" onClick={onAddDayClick} className="no-export" sx={{ color: '#5B7065' }}>
+                        <AddCircleIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </th>
               )}
 
@@ -147,20 +203,31 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
 
               {/* If day column is on RIGHT (Standard as user requested: rightmost column will be days) */}
               {isRightDayCol && (
-                <th className="p-3 sm:p-4 text-xs font-bold uppercase tracking-wider text-indigo-950 dark:text-indigo-200 bg-indigo-100/95 dark:bg-indigo-950/95 border-b border-l border-slate-200 dark:border-slate-800 sticky right-0 z-30 backdrop-blur-md min-w-[140px] sm:min-w-[165px] shadow-[-4px_0_12px_rgba(0,0,0,0.03)]">
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-heading">
-                      <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                      Days
-                    </span>
-                    <button
-                      onClick={onAddDayClick}
-                      className="p-1 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 no-export transition-colors cursor-pointer"
-                      title="Add new day"
-                    >
-                      <PlusCircle className="w-4 h-4" />
-                    </button>
-                  </div>
+                <th
+                  style={{
+                    padding: '12px 14px',
+                    backgroundColor: '#EFEBE2',
+                    borderBottom: '1px solid #E5E0D6',
+                    borderLeft: '1px solid #E5E0D6',
+                    position: 'sticky',
+                    right: 0,
+                    zIndex: 30,
+                    minWidth: '150px',
+                    userSelect: 'none',
+                    boxShadow: '-3px 0 6px rgba(46,51,47,0.03)',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#2E332F', fontWeight: 700, fontSize: '13px' }}>
+                      <CalendarMonthIcon sx={{ fontSize: 18, color: '#5B7065' }} />
+                      <span>Days</span>
+                    </Box>
+                    <Tooltip title="Add Day" arrow>
+                      <IconButton size="small" onClick={onAddDayClick} className="no-export" sx={{ color: '#5B7065' }}>
+                        <AddCircleIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </th>
               )}
             </tr>
@@ -169,7 +236,7 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
           {/* TABLE ROWS: EACH DAY */}
           <tbody>
             {routine.days.map((day, dIdx) => (
-              <tr key={day.id} className="group/row">
+              <tr key={day.id}>
                 {/* Left day header if toggled */}
                 {!isRightDayCol && (
                   <DayHeader
@@ -231,7 +298,7 @@ export const RoutineTable: React.FC<RoutineTableProps> = ({
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
+      </Box>
+    </Paper>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import type { RoutineItem, RoutineSettings, DragState } from '../types/routine';
 import { RoutineCard } from './RoutineCard';
-import { Plus } from 'lucide-react';
+import AddIcon from '@mui/icons-material/Add';
+import Box from '@mui/material/Box';
 
 interface RoutineCellProps {
   dayId: string;
@@ -84,11 +85,18 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`p-2 border-b border-r border-slate-200 dark:border-slate-800/80 transition-all duration-200 align-top min-w-[175px] sm:min-w-[205px] max-w-[260px] ${
-        isOver
-          ? 'bg-indigo-50/80 dark:bg-indigo-950/60 ring-2 ring-indigo-500 ring-inset shadow-inner'
-          : 'bg-white/60 dark:bg-slate-950/40 hover:bg-slate-50/80 dark:hover:bg-slate-900/40'
-      }`}
+      style={{
+        padding: '8px',
+        borderBottom: '1px solid #EAE6DF',
+        borderRight: '1px solid #EAE6DF',
+        verticalAlign: 'top',
+        minWidth: '180px',
+        maxWidth: '240px',
+        backgroundColor: isOver ? '#EBF2ED' : '#FFFFFF',
+        outline: isOver ? '2px solid #5B7065' : 'none',
+        outlineOffset: '-2px',
+        transition: 'background-color 0.15s ease',
+      }}
     >
       {item ? (
         <RoutineCard
@@ -107,26 +115,48 @@ export const RoutineCell: React.FC<RoutineCellProps> = ({
           isHighlighted={isHighlighted}
         />
       ) : (
-        <div
+        <Box
           onClick={() => onAddClick(dayId, timeSlotId)}
-          className={`h-full min-h-[82px] sm:min-h-[92px] rounded-xl border border-dashed transition-all flex flex-col items-center justify-center cursor-pointer group select-none ${
-            isOver
-              ? 'border-indigo-500 bg-indigo-100/60 dark:bg-indigo-900/40 text-indigo-600 scale-[0.98]'
-              : isRoutineItemDragging
-              ? 'border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 dark:bg-indigo-950/20 text-indigo-500 animate-pulse'
-              : 'border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 text-slate-400 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400'
-          }`}
+          sx={{
+            height: '100%',
+            minHeight: '82px',
+            borderRadius: '12px',
+            border: '1px dashed',
+            borderColor: isOver ? '#5B7065' : isRoutineItemDragging ? '#A4B8AB' : '#E0DBD2',
+            backgroundColor: isOver ? '#E2EBE5' : isRoutineItemDragging ? '#F4F8F5' : 'transparent',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            userSelect: 'none',
+            transition: 'all 0.15s ease',
+            '&:hover': {
+              borderColor: '#5B7065',
+              backgroundColor: '#F5F8F6',
+              '& .add-label': {
+                opacity: 1,
+              },
+            },
+          }}
         >
-          <div className="flex items-center gap-1.5 text-xs font-bold opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-105">
-            <Plus className="w-4 h-4 text-indigo-500" />
-            <span>Add Event</span>
-          </div>
-          {isOver && (
-            <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-300 mt-0.5">
-              Drop here to place
-            </span>
-          )}
-        </div>
+          <Box
+            className="add-label"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              color: '#5B7065',
+              fontSize: '12px',
+              fontWeight: 700,
+              opacity: isOver ? 1 : 0,
+              transition: 'opacity 0.15s ease',
+            }}
+          >
+            <AddIcon sx={{ fontSize: 16 }} />
+            <span>{isOver ? 'Drop to place' : 'Add Event'}</span>
+          </Box>
+        </Box>
       )}
     </td>
   );

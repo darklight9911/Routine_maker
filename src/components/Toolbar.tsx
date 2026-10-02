@@ -1,17 +1,23 @@
 import type React from 'react';
 import type { RoutineSettings } from '../types/routine';
 import { CATEGORIES } from '../constants/presets';
-import {
-  Search,
-  Plus,
-  Clock,
-  Calendar,
-  ArrowRightLeft,
-  BarChart2,
-  Trash2,
-  X,
-  SlidersHorizontal,
-} from 'lucide-react';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 interface ToolbarProps {
   settings: RoutineSettings;
@@ -45,225 +51,317 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   totalItemsCount,
 }) => {
   return (
-    <div className="flex flex-col gap-3.5 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 shadow-lg shadow-slate-200/40 dark:shadow-black/20 mb-5 no-print transition-all">
-      {/* Upper toolbar row: Search, Category Quick Chips, and Primary Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Search input with live clear & count */}
-        <div className="flex items-center gap-2 flex-1 min-w-[260px] max-w-md">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchFilter}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search subjects, rooms, professors..."
-              className="w-full pl-10 pr-9 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/80 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-            />
-            {searchFilter && (
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                title="Clear search"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+    <Paper
+      elevation={0}
+      className="no-print"
+      sx={{
+        p: { xs: 2, sm: 2.5 },
+        mb: 3,
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E5E0D6',
+        borderRadius: '18px',
+        boxShadow: '0 2px 8px rgba(46,51,47,0.04)',
+      }}
+    >
+      {/* Upper toolbar row: Search Bar & Primary Actions */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        {/* Search Input */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: '260px', maxWidth: '420px' }}>
+          <TextField
+            size="small"
+            fullWidth
+            placeholder="Search classes, rooms, professors..."
+            value={searchFilter}
+            onChange={(e) => onSearchChange(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: '#8C948D', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchFilter ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => onSearchChange('')} edge="end">
+                      <ClearIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+                sx: {
+                  borderRadius: '12px',
+                  backgroundColor: '#FAF8F5',
+                  fontSize: '13.5px',
+                  '& fieldset': { borderColor: '#E5E0D6' },
+                  '&:hover fieldset': { borderColor: '#BDB6A8' },
+                  '&.Mui-focused fieldset': { borderColor: '#5B7065' },
+                },
+              },
+            }}
+          />
           {searchFilter && totalFilteredCount !== undefined && totalItemsCount !== undefined && (
-            <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 shrink-0">
-              {totalFilteredCount}/{totalItemsCount} matches
-            </span>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#5B7065', whiteSpace: 'nowrap' }}>
+              {totalFilteredCount}/{totalItemsCount}
+            </Typography>
           )}
-        </div>
+        </Box>
 
         {/* Primary Action Buttons */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
             onClick={onAddItemClick}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 hover:-translate-y-0.5 transition-all active:scale-95 cursor-pointer"
-            title="Add a new class or event"
+            sx={{
+              backgroundColor: '#5B7065',
+              fontWeight: 700,
+              fontSize: '13px',
+              px: 2.2,
+              '&:hover': { backgroundColor: '#485A50' },
+            }}
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Event</span>
-          </button>
+            Add Event
+          </Button>
 
-          <button
+          <Button
+            variant="outlined"
+            startIcon={<AccessTimeIcon sx={{ color: '#5B7065' }} />}
             onClick={onAddTimeSlotClick}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
-            title="Add a new time period column"
+            sx={{
+              borderColor: '#E5E0D6',
+              color: '#2E332F',
+              fontSize: '13px',
+              '&:hover': { borderColor: '#5B7065', backgroundColor: '#F8F6F2' },
+            }}
           >
-            <Clock className="w-3.5 h-3.5 text-indigo-500" />
             <span className="hidden sm:inline">Add Time Slot</span>
             <span className="sm:hidden">+ Time</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="outlined"
+            startIcon={<CalendarMonthIcon sx={{ color: '#B87352' }} />}
             onClick={onAddDayClick}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
-            title="Add a new day row"
+            sx={{
+              borderColor: '#E5E0D6',
+              color: '#2E332F',
+              fontSize: '13px',
+              '&:hover': { borderColor: '#B87352', backgroundColor: '#FAF4F0' },
+            }}
           >
-            <Calendar className="w-3.5 h-3.5 text-purple-500" />
             <span className="hidden sm:inline">Add Day</span>
             <span className="sm:hidden">+ Day</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="outlined"
+            startIcon={<AnalyticsOutlinedIcon sx={{ color: '#5B7A8C' }} />}
             onClick={onOpenStats}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-all hover:-translate-y-0.5 cursor-pointer"
-            title="View workload stats and analytics"
+            sx={{
+              borderColor: '#E5E0D6',
+              color: '#2E332F',
+              fontSize: '13px',
+              '&:hover': { borderColor: '#5B7A8C', backgroundColor: '#F2F6F8' },
+            }}
           >
-            <BarChart2 className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="hidden sm:inline">Analytics</span>
-          </button>
-        </div>
-      </div>
+            Analytics
+          </Button>
+        </Box>
+      </Box>
 
-      {/* Category Pills Slider / Filter Row */}
-      <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
-          <SlidersHorizontal className="w-3 h-3" />
-          Filter:
-        </span>
-        <button
-          onClick={() => onCategoryChange('')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-            !categoryFilter
-              ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-          }`}
+      {/* Category Pills Row */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          mt: 2,
+          pt: 1.5,
+          borderTop: '1px solid #EFECE6',
+          overflowX: 'auto',
+          pb: 0.5,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 700,
+            color: '#8C948D',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            mr: 0.5,
+            flexShrink: 0,
+          }}
         >
-          All
-        </button>
+          Categories:
+        </Typography>
+
+        <Chip
+          label="All"
+          size="small"
+          clickable
+          onClick={() => onCategoryChange('')}
+          sx={{
+            backgroundColor: !categoryFilter ? '#2E332F' : '#FAF8F5',
+            color: !categoryFilter ? '#FFFFFF' : '#556058',
+            border: '1px solid',
+            borderColor: !categoryFilter ? '#2E332F' : '#E5E0D6',
+            fontWeight: 600,
+            fontSize: '12px',
+          }}
+        />
+
         {CATEGORIES.map((cat) => {
-          const isActive = categoryFilter === cat;
+          const isSelected = categoryFilter === cat;
           return (
-            <button
+            <Chip
               key={cat}
-              onClick={() => onCategoryChange(isActive ? '' : cat)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-                isActive
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-              }`}
-            >
-              {cat}
-            </button>
+              label={cat}
+              size="small"
+              clickable
+              onClick={() => onCategoryChange(isSelected ? '' : cat)}
+              sx={{
+                backgroundColor: isSelected ? '#5B7065' : '#FAF8F5',
+                color: isSelected ? '#FFFFFF' : '#556058',
+                border: '1px solid',
+                borderColor: isSelected ? '#5B7065' : '#E5E0D6',
+                fontWeight: 600,
+                fontSize: '12px',
+                '&:hover': {
+                  backgroundColor: isSelected ? '#4A5D53' : '#F0ECE4',
+                },
+              }}
+            />
           );
         })}
-      </div>
+      </Box>
 
-      {/* Lower toolbar row: Layout toggles (Days on Right, Compact, Time Format, Visible Fields) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Day column position toggle (Right / Left) */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-slate-500">Days Column:</span>
-            <button
+      {/* Lower toolbar row: Layout toggles (Days on Right, Time format, Density) */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          mt: 2,
+          pt: 1.5,
+          borderTop: '1px solid #EFECE6',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
+          {/* Day Column Position Toggle */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
+              Days Column:
+            </Typography>
+            <Button
+              size="small"
+              variant={settings.dayColumnPosition === 'right' ? 'contained' : 'outlined'}
               onClick={() =>
                 onUpdateSettings({
                   dayColumnPosition: settings.dayColumnPosition === 'right' ? 'left' : 'right',
                 })
               }
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-xs transition-colors border cursor-pointer ${
-                settings.dayColumnPosition === 'right'
-                  ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-700 shadow-2xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-              }`}
-              title="Toggle Day column placement between Right (Default) and Left"
+              startIcon={<SwapHorizIcon />}
+              sx={{
+                fontSize: '11.5px',
+                py: 0.4,
+                px: 1.2,
+                backgroundColor: settings.dayColumnPosition === 'right' ? '#F0F5F1' : 'transparent',
+                color: settings.dayColumnPosition === 'right' ? '#3B4E43' : '#68726A',
+                border: '1px solid',
+                borderColor: settings.dayColumnPosition === 'right' ? '#8FA395' : '#D8D2C7',
+                '&:hover': {
+                  backgroundColor: '#E2EBE5',
+                },
+              }}
             >
-              <ArrowRightLeft className="w-3 h-3 text-indigo-500" />
-              <span>{settings.dayColumnPosition === 'right' ? 'Rightmost (Default)' : 'Left'}</span>
-            </button>
-          </div>
+              {settings.dayColumnPosition === 'right' ? 'Rightmost (Default)' : 'Left'}
+            </Button>
+          </Box>
 
-          {/* Time format (12h / 24h) */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-slate-500">Time:</span>
-            <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-slate-100 dark:bg-slate-800">
-              <button
+          {/* Time Format */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
+              Time:
+            </Typography>
+            <ButtonGroup size="small" variant="outlined">
+              <Button
                 onClick={() => onUpdateSettings({ timeFormat: '12h' })}
-                className={`px-2.5 py-0.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
-                  settings.timeFormat === '12h'
-                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                sx={{
+                  fontSize: '11px',
+                  py: 0.3,
+                  backgroundColor: settings.timeFormat === '12h' ? '#5B7065' : 'transparent',
+                  color: settings.timeFormat === '12h' ? '#FFFFFF' : '#68726A',
+                  borderColor: '#D8D2C7',
+                  '&:hover': { backgroundColor: settings.timeFormat === '12h' ? '#4A5D53' : '#F0ECE4' },
+                }}
               >
                 12h
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => onUpdateSettings({ timeFormat: '24h' })}
-                className={`px-2.5 py-0.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
-                  settings.timeFormat === '24h'
-                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-2xs'
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                sx={{
+                  fontSize: '11px',
+                  py: 0.3,
+                  backgroundColor: settings.timeFormat === '24h' ? '#5B7065' : 'transparent',
+                  color: settings.timeFormat === '24h' ? '#FFFFFF' : '#68726A',
+                  borderColor: '#D8D2C7',
+                  '&:hover': { backgroundColor: settings.timeFormat === '24h' ? '#4A5D53' : '#F0ECE4' },
+                }}
               >
                 24h
-              </button>
-            </div>
-          </div>
+              </Button>
+            </ButtonGroup>
+          </Box>
 
-          {/* Density (Compact / Comfortable) */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-medium text-slate-500">Density:</span>
-            <button
+          {/* Density */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: '#68726A', fontWeight: 600 }}>
+              Density:
+            </Typography>
+            <Button
+              size="small"
               onClick={() => onUpdateSettings({ compactMode: !settings.compactMode })}
-              className={`px-2.5 py-1 rounded-lg font-semibold text-xs border transition-colors cursor-pointer ${
-                settings.compactMode
-                  ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-              }`}
+              sx={{
+                fontSize: '11px',
+                py: 0.3,
+                px: 1.2,
+                backgroundColor: settings.compactMode ? '#F0F5F1' : '#FAF8F5',
+                color: settings.compactMode ? '#3B4E43' : '#68726A',
+                border: '1px solid',
+                borderColor: settings.compactMode ? '#8FA395' : '#D8D2C7',
+              }}
             >
               {settings.compactMode ? 'Compact' : 'Comfortable'}
-            </button>
-          </div>
+            </Button>
+          </Box>
+        </Box>
 
-          {/* Field visibility checkboxes */}
-          <div className="hidden lg:flex items-center gap-3 text-xs">
-            <label className="flex items-center gap-1.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={settings.showLocation}
-                onChange={(e) => onUpdateSettings({ showLocation: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
-              />
-              <span>Rooms</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={settings.showInstructor}
-                onChange={(e) => onUpdateSettings({ showInstructor: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
-              />
-              <span>Instructors</span>
-            </label>
-            <label className="flex items-center gap-1.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={settings.showCategory}
-                onChange={(e) => onUpdateSettings({ showCategory: e.target.checked })}
-                className="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer"
-              />
-              <span>Tags</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Clear all items */}
-        <button
+        {/* Clear Events Button */}
+        <Button
+          size="small"
+          color="error"
+          startIcon={<DeleteOutlineIcon />}
           onClick={() => {
             if (window.confirm('Are you sure you want to clear all routine items?')) {
               onClearAll();
             }
           }}
-          className="text-xs font-semibold text-rose-500 hover:text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
+          sx={{ fontSize: '11.5px', textTransform: 'none', color: '#C15C5C' }}
         >
-          <Trash2 className="w-3.5 h-3.5" />
-          <span>Clear Events</span>
-        </button>
-      </div>
-    </div>
+          Clear Events
+        </Button>
+      </Box>
+    </Paper>
   );
 };

@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import type { Day, DragState } from '../types/routine';
-import { GripVertical, Edit3, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 interface DayHeaderProps {
   day: Day;
@@ -57,110 +65,174 @@ export const DayHeader: React.FC<DayHeaderProps> = ({
           onDrop(day.id);
         }
       }}
-      className={`group relative p-3 sm:p-4 select-none transition-all duration-200 border-b border-slate-200 dark:border-slate-800/80 ${
-        isRightColumn
-          ? 'border-l border-slate-200 dark:border-slate-800 sticky right-0 z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.03)]'
-          : 'border-r border-slate-200 dark:border-slate-800 sticky left-0 z-10 shadow-[4px_0_12px_rgba(0,0,0,0.03)]'
-      } ${
-        day.isOffDay
-          ? 'bg-slate-100/95 dark:bg-slate-900/95 text-slate-500 dark:text-slate-400'
-          : 'bg-indigo-50/95 dark:bg-indigo-950/85 text-indigo-950 dark:text-indigo-100'
-      } ${
-        isOver
-          ? 'ring-2 ring-indigo-500 bg-indigo-100 dark:bg-indigo-900/90 scale-[1.01] z-30 shadow-md'
-          : ''
-      } ${isDraggingMe ? 'opacity-30' : 'opacity-100'} cursor-grab active:cursor-grabbing w-[140px] sm:w-[165px] min-w-[140px]`}
+      style={{
+        backgroundColor: day.isOffDay ? '#EFEBE2' : isOver ? '#EBF2ED' : '#F5F1E9',
+        borderBottom: '1px solid #E5E0D6',
+        borderLeft: isRightColumn ? '1px solid #E5E0D6' : 'none',
+        borderRight: !isRightColumn ? '1px solid #E5E0D6' : 'none',
+        position: 'sticky',
+        right: isRightColumn ? 0 : 'auto',
+        left: !isRightColumn ? 0 : 'auto',
+        zIndex: 10,
+        padding: '12px 14px',
+        userSelect: 'none',
+        cursor: 'grab',
+        width: '150px',
+        minWidth: '150px',
+        transition: 'all 0.15s ease',
+        outline: isOver ? '2px solid #5B7065' : 'none',
+        opacity: isDraggingMe ? 0.35 : 1,
+        boxShadow: isRightColumn ? '-3px 0 6px rgba(46,51,47,0.03)' : '3px 0 6px rgba(46,51,47,0.03)',
+      }}
     >
-      <div className="flex items-center justify-between gap-1.5">
-        <div className="flex items-center gap-2 min-w-0">
-          <span
-            className="text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 cursor-grab active:cursor-grabbing transition-colors"
-            title="Drag vertically to reorder day row"
-          >
-            <GripVertical className="w-4 h-4" />
-          </span>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+          <DragIndicatorIcon
+            sx={{
+              fontSize: 16,
+              color: '#8C948D',
+              cursor: 'grab',
+              '&:hover': { color: '#5B7065' },
+            }}
+          />
 
-          {/* Initial badge circle */}
-          <div
-            className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs ${
-              day.isOffDay
-                ? 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                : 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white'
-            }`}
+          {/* Initial solid circle avatar */}
+          <Box
+            sx={{
+              width: 28,
+              height: 28,
+              borderRadius: '8px',
+              backgroundColor: day.isOffDay ? '#DCD6CB' : '#5B7065',
+              color: day.isOffDay ? '#556058' : '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
           >
             {day.name.charAt(0)}
-          </div>
+          </Box>
 
-          <div className="min-w-0">
-            <div className="font-heading font-bold text-sm sm:text-base tracking-tight truncate">
-              {day.name}
-            </div>
-            {day.isOffDay && (
-              <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                Weekend / Off
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Action icons & WCAG single-pointer reorder arrows */}
-        <div className="flex items-center gap-0.5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity no-export">
-          {onMove && index > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(day.id, 'up');
+          <Box sx={{ minWidth: 0 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                fontSize: '13.5px',
+                color: day.isOffDay ? '#68726A' : '#2E332F',
+                lineHeight: 1.2,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
-              className="p-1 rounded-md hover:bg-white/80 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-              title="Shift row up"
-              aria-label="Shift row up"
             >
-              <ChevronUp className="w-3.5 h-3.5" />
-            </button>
+              {day.name}
+            </Typography>
+            {day.isOffDay && (
+              <Box
+                sx={{
+                  display: 'inline-block',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: '#68726A',
+                  backgroundColor: '#E2DCD1',
+                  px: 0.75,
+                  py: 0.1,
+                  borderRadius: '4px',
+                  mt: 0.25,
+                }}
+              >
+                Off Day
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        {/* Action icons & WCAG single-pointer reorder buttons */}
+        <Box
+          className="no-export"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.25,
+          }}
+        >
+          {onMove && index > 0 && (
+            <Tooltip title="Shift day up" arrow>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMove(day.id, 'up');
+                }}
+                sx={{
+                  p: 0.4,
+                  color: '#637067',
+                  '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+                }}
+              >
+                <KeyboardArrowUpIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
           {onMove && index < totalDays - 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(day.id, 'down');
-              }}
-              className="p-1 rounded-md hover:bg-white/80 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-              title="Shift row down"
-              aria-label="Shift row down"
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
+            <Tooltip title="Shift day down" arrow>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMove(day.id, 'down');
+                }}
+                sx={{
+                  p: 0.4,
+                  color: '#637067',
+                  '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+                }}
+              >
+                <KeyboardArrowDownIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(day);
-            }}
-            className="p-1 rounded-md hover:bg-white/80 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-            title="Edit day"
-            aria-label="Edit day"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(day.id);
-            }}
-            className="p-1 rounded-md hover:bg-white/80 dark:hover:bg-slate-800 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-            title="Delete day"
-            aria-label="Delete day"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+          <Tooltip title="Edit day" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(day);
+              }}
+              sx={{
+                p: 0.4,
+                color: '#637067',
+                '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+              }}
+            >
+              <EditOutlinedIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete day" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(day.id);
+              }}
+              sx={{
+                p: 0.4,
+                color: '#637067',
+                '&:hover': { backgroundColor: '#ECE7DE', color: '#C15C5C' },
+              }}
+            >
+              <DeleteOutlineIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
     </td>
   );
 };

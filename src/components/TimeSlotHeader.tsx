@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import type { TimeSlot, RoutineSettings, DragState } from '../types/routine';
 import { formatTimeRange, calculateDurationMinutes, formatDuration } from '../utils/time';
-import { GripHorizontal, Edit3, Trash2, Coffee, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import CoffeeIcon from '@mui/icons-material/Coffee';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 interface TimeSlotHeaderProps {
   slot: TimeSlot;
@@ -61,110 +71,191 @@ export const TimeSlotHeader: React.FC<TimeSlotHeaderProps> = ({
           onDrop(slot.id);
         }
       }}
-      className={`group relative p-3 sm:p-3.5 select-none transition-all duration-200 border-b border-r border-slate-200 dark:border-slate-800/80 ${
-        slot.isBreak
-          ? 'bg-amber-50/80 dark:bg-amber-950/30'
-          : 'bg-slate-100/85 dark:bg-slate-900/85 backdrop-blur-md'
-      } ${
-        isOver
-          ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 scale-[1.01] z-20 shadow-md'
-          : ''
-      } ${isDraggingMe ? 'opacity-30' : 'opacity-100'} cursor-grab active:cursor-grabbing min-w-[175px] sm:min-w-[205px]`}
+      style={{
+        backgroundColor: slot.isBreak ? '#FAF3E8' : isOver ? '#EBF2ED' : '#F6F3ED',
+        borderBottom: '1px solid #E5E0D6',
+        borderRight: '1px solid #E5E0D6',
+        padding: '12px 14px',
+        textAlign: 'left',
+        userSelect: 'none',
+        minWidth: '180px',
+        maxWidth: '240px',
+        cursor: 'grab',
+        transition: 'all 0.15s ease',
+        outline: isOver ? '2px solid #5B7065' : 'none',
+        opacity: isDraggingMe ? 0.35 : 1,
+      }}
     >
-      {/* Top row: Label, Duration, Break Badge, Single-pointer reorder controls */}
-      <div className="flex items-center justify-between gap-1 mb-1.5">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span
-            className="text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 cursor-grab active:cursor-grabbing transition-colors"
-            title="Drag horizontally to reorder time column"
-          >
-            <GripHorizontal className="w-3.5 h-3.5" />
-          </span>
+      {/* Top row: Grip, Label, Break Status, Single-pointer arrows */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
+          <DragIndicatorIcon
+            sx={{
+              fontSize: 16,
+              color: '#8C948D',
+              cursor: 'grab',
+              transform: 'rotate(90deg)',
+              '&:hover': { color: '#5B7065' },
+            }}
+          />
 
           {slot.label && (
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200 truncate">
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 700,
+                fontSize: '11px',
+                color: '#3B423D',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {slot.label}
-            </span>
+            </Typography>
           )}
 
           {slot.isBreak && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 shrink-0">
-              <Coffee className="w-2.5 h-2.5" />
-              Break
-            </span>
-          )}
-        </div>
-
-        {/* Action icons & WCAG single-pointer reorder arrows */}
-        <div className="flex items-center gap-0.5 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity no-export">
-          {onMove && index > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(slot.id, 'left');
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.4,
+                px: 1,
+                py: 0.2,
+                borderRadius: '6px',
+                backgroundColor: '#F5E6D3',
+                color: '#6E451A',
+                fontSize: '10px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
               }}
-              className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-              title="Shift column left"
-              aria-label="Shift column left"
             >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
+              <CoffeeIcon sx={{ fontSize: 12 }} />
+              <span>Break</span>
+            </Box>
+          )}
+        </Box>
+
+        {/* Action icons & WCAG single-pointer reorder buttons */}
+        <Box
+          className="no-export"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.25,
+          }}
+        >
+          {onMove && index > 0 && (
+            <Tooltip title="Move column left" arrow>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMove(slot.id, 'left');
+                }}
+                sx={{
+                  p: 0.4,
+                  color: '#637067',
+                  '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+                }}
+              >
+                <ChevronLeftIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
           {onMove && index < totalSlots - 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(slot.id, 'right');
-              }}
-              className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-              title="Shift column right"
-              aria-label="Shift column right"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            <Tooltip title="Move column right" arrow>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMove(slot.id, 'right');
+                }}
+                sx={{
+                  p: 0.4,
+                  color: '#637067',
+                  '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+                }}
+              >
+                <ChevronRightIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(slot);
-            }}
-            className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-            title="Edit time slot"
-            aria-label="Edit time slot"
-          >
-            <Edit3 className="w-3 h-3" />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(slot.id);
-            }}
-            className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-            title="Delete time slot"
-            aria-label="Delete time slot"
-          >
-            <Trash2 className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
+          <Tooltip title="Edit slot" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(slot);
+              }}
+              sx={{
+                p: 0.4,
+                color: '#637067',
+                '&:hover': { backgroundColor: '#ECE7DE', color: '#5B7065' },
+              }}
+            >
+              <EditOutlinedIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Delete slot" arrow>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(slot.id);
+              }}
+              sx={{
+                p: 0.4,
+                color: '#637067',
+                '&:hover': { backgroundColor: '#ECE7DE', color: '#C15C5C' },
+              }}
+            >
+              <DeleteOutlineIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
 
       {/* Main Time display */}
-      <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold font-mono text-slate-900 dark:text-slate-100 tracking-tight">
-        <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-        <span>{formattedRange}</span>
-      </div>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+        <AccessTimeIcon sx={{ fontSize: 15, color: '#5B7065' }} />
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: '"JetBrains Mono", monospace',
+            fontWeight: 700,
+            fontSize: '13px',
+            color: '#2E332F',
+          }}
+        >
+          {formattedRange}
+        </Typography>
+      </Box>
 
       {/* Duration chip */}
       {durationMin > 0 && (
-        <div className="inline-block mt-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800/60 px-1.5 py-0.2 rounded-md">
+        <Box
+          sx={{
+            display: 'inline-block',
+            mt: 0.75,
+            px: 0.8,
+            py: 0.15,
+            borderRadius: '6px',
+            backgroundColor: '#ECE7DE',
+            color: '#556058',
+            fontSize: '10.5px',
+            fontWeight: 600,
+          }}
+        >
           {formatDuration(durationMin)}
-        </div>
+        </Box>
       )}
     </th>
   );

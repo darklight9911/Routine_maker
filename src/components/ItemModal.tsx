@@ -2,7 +2,22 @@ import React, { useState } from 'react';
 import type { RoutineItem, Day, TimeSlot, RoutineSettings } from '../types/routine';
 import { COLOR_PALETTE, CATEGORIES } from '../constants/presets';
 import { formatTimeRange } from '../utils/time';
-import { X, Trash2, Check, BookOpen, MapPin, User, Tag, AlignLeft, Calendar, Clock } from 'lucide-react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlineIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 
 interface ItemModalProps {
   isOpen: boolean;
@@ -32,7 +47,7 @@ const ItemModalContent: React.FC<Omit<ItemModalProps, 'isOpen'>> = ({
   const [subtitle, setSubtitle] = useState(initialItem?.subtitle || '');
   const [instructor, setInstructor] = useState(initialItem?.instructor || '');
   const [location, setLocation] = useState(initialItem?.location || '');
-  const [color, setColor] = useState(initialItem?.color || 'indigo');
+  const [color, setColor] = useState(initialItem?.color || 'sage');
   const [category, setCategory] = useState(initialItem?.category || 'Lecture');
   const [notes, setNotes] = useState(initialItem?.notes || '');
   const [dayId, setDayId] = useState(initialItem?.dayId || defaultDayId || days[0]?.id || '');
@@ -72,240 +87,236 @@ const ItemModalContent: React.FC<Omit<ItemModalProps, 'isOpen'>> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div
-        className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
+    <Dialog
+      open
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: '20px',
+            border: '1px solid #E5E0D6',
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 16px 40px rgba(46,51,47,0.1)',
+          },
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          m: 0,
+          p: 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #EFECE6',
+        }}
       >
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {initialItem ? 'Edit Routine Item' : 'New Routine Item'}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Specify class, meeting, or activity details
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F' }}>
+            {initialItem ? 'Edit Routine Event' : 'New Routine Event'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#7E8780' }}>
+            Enter subject details, room, and category
+          </Typography>
+        </Box>
+        <IconButton onClick={onClose} size="small" sx={{ color: '#8C948D' }}>
+          <CloseIcon sx={{ fontSize: 20 }} />
+        </IconButton>
+      </DialogTitle>
 
-        {/* Modal Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
-          {/* Day & Time Slot Selectors */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
-                Day of Week
-              </label>
-              <select
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          {/* Day & Time Slot Select */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+            <FormControl size="small" fullWidth>
+              <InputLabel>Day of Week</InputLabel>
+              <Select
                 value={dayId}
+                label="Day of Week"
                 onChange={(e) => setDayId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-                required
+                sx={{ borderRadius: '12px' }}
               >
                 {days.map((d) => (
-                  <option key={d.id} value={d.id}>
+                  <MenuItem key={d.id} value={d.id}>
                     {d.name} {d.isOffDay ? '(Off Day)' : ''}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </div>
+              </Select>
+            </FormControl>
 
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                <Clock className="w-3.5 h-3.5 text-indigo-500" />
-                Time Slot
-              </label>
-              <select
+            <FormControl size="small" fullWidth>
+              <InputLabel>Time Slot</InputLabel>
+              <Select
                 value={timeSlotId}
+                label="Time Slot"
                 onChange={(e) => setTimeSlotId(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-                required
+                sx={{ borderRadius: '12px' }}
               >
                 {timeSlots.map((s) => (
-                  <option key={s.id} value={s.id}>
+                  <MenuItem key={s.id} value={s.id}>
                     {s.label ? `${s.label}: ` : ''}
                     {formatTimeRange(s.startTime, s.endTime, settings.timeFormat)}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </div>
-          </div>
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* Title */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Title / Activity Name <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Data Structures & Algorithms, Sprint Standup"
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-medium"
-              required
-              autoFocus
-            />
-          </div>
+          <TextField
+            label="Activity / Subject Title"
+            required
+            size="small"
+            fullWidth
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Data Structures & Algorithms, Design Meeting"
+            slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            autoFocus
+          />
 
           {/* Subtitle & Category */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Code / Subtitle
-              </label>
-              <input
-                type="text"
-                value={subtitle}
-                onChange={(e) => setSubtitle(e.target.value)}
-                placeholder="e.g. CSE-201, Sprint 24"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+            <TextField
+              label="Code / Subtitle"
+              size="small"
+              fullWidth
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              placeholder="e.g. CS-201, Sprint 24"
+              slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            />
 
-            <div>
-              <label className="flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                <Tag className="w-3.5 h-3.5 text-indigo-500" />
-                Category
-              </label>
-              <select
+            <FormControl size="small" fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
                 value={category}
+                label="Category"
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                sx={{ borderRadius: '12px' }}
               >
                 {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <MenuItem key={cat} value={cat}>
                     {cat}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </div>
-          </div>
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* Location & Instructor */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                <MapPin className="w-3.5 h-3.5 text-indigo-500" />
-                Location / Room / Link
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Auditorium 201, Zoom"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+            <TextField
+              label="Location / Room / Link"
+              size="small"
+              fullWidth
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g. Hall 201, Zoom"
+              slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            />
 
-            <div>
-              <label className="flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                <User className="w-3.5 h-3.5 text-indigo-500" />
-                Instructor / Presenter
-              </label>
-              <input
-                type="text"
-                value={instructor}
-                onChange={(e) => setInstructor(e.target.value)}
-                placeholder="e.g. Prof. Alan Turing"
-                className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          </div>
+            <TextField
+              label="Instructor / Speaker"
+              size="small"
+              fullWidth
+              value={instructor}
+              onChange={(e) => setInstructor(e.target.value)}
+              placeholder="e.g. Prof. Alan Turing"
+              slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+            />
+          </Box>
 
-          {/* Color Palette Selector */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Color Accent
-            </label>
-            <div className="flex flex-wrap gap-2">
+          {/* Cozy Solid Color Selector (No gradients) */}
+          <Box>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: '#4B534D', display: 'block', mb: 1 }}>
+              Cozy Accent Color
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {COLOR_PALETTE.map((c) => {
                 const isSelected = color === c.id;
                 return (
-                  <button
+                  <Box
                     key={c.id}
-                    type="button"
                     onClick={() => setColor(c.id)}
-                    className={`relative w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${
-                      isSelected
-                        ? 'border-slate-900 dark:border-white scale-110 shadow-md ring-2 ring-indigo-400'
-                        : 'border-transparent hover:scale-105 opacity-80 hover:opacity-100'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '8px',
+                      backgroundColor: c.hex,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      border: isSelected ? '2px solid #2E332F' : '1px solid rgba(0,0,0,0.1)',
+                      boxShadow: isSelected ? '0 2px 6px rgba(0,0,0,0.15)' : 'none',
+                      transition: 'all 0.15s ease',
+                      '&:hover': { transform: 'scale(1.08)' },
+                    }}
                     title={c.name}
                   >
-                    {isSelected && <Check className="w-4 h-4 text-white drop-shadow-md" />}
-                  </button>
+                    {isSelected && <CheckIcon sx={{ fontSize: 16, color: '#FFFFFF' }} />}
+                  </Box>
                 );
               })}
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           {/* Notes */}
-          <div>
-            <label className="flex items-center gap-1 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              <AlignLeft className="w-3.5 h-3.5 text-indigo-500" />
-              Notes / Remarks
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. Bring lab coat, submit assignment before class"
-              rows={2}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 resize-none"
-            />
-          </div>
+          <TextField
+            label="Notes / Remarks"
+            size="small"
+            multiline
+            rows={2}
+            fullWidth
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="e.g. Bring laptop, preparation tasks"
+            slotProps={{ input: { sx: { borderRadius: '12px' } } }}
+          />
+        </DialogContent>
 
-          {/* Modal Footer Actions */}
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            {initialItem && onDelete ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(initialItem.id);
-                  onClose();
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
-            ) : (
-              <div />
-            )}
+        <DialogActions
+          sx={{
+            p: 2.5,
+            borderTop: '1px solid #EFECE6',
+            justifyContent: 'space-between',
+          }}
+        >
+          {initialItem && onDelete ? (
+            <Button
+              color="error"
+              startIcon={<DeleteOutlineIcon />}
+              onClick={() => {
+                onDelete(initialItem.id);
+                onClose();
+              }}
+              sx={{ color: '#C15C5C' }}
+            >
+              Delete
+            </Button>
+          ) : (
+            <Box />
+          )}
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-xs transition-colors"
-              >
-                {initialItem ? 'Save Changes' : 'Add to Routine'}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Button variant="outlined" onClick={onClose} sx={{ borderColor: '#D8D2C7', color: '#68726A' }}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ backgroundColor: '#5B7065', fontWeight: 700 }}
+            >
+              {initialItem ? 'Save Changes' : 'Add to Routine'}
+            </Button>
+          </Box>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

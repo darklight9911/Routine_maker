@@ -1,24 +1,32 @@
 import React, { useState, useRef } from 'react';
 import type { RoutineData } from '../types/routine';
 import { exportRoutineAsJSON, exportTableAsImage } from '../utils/storage';
-import {
-  Undo2,
-  Redo2,
-  Download,
-  Printer,
-  Upload,
-  FileJson,
-  Image as ImageIcon,
-  Sun,
-  Moon,
-  Sparkles,
-  Edit2,
-  Check,
-  CalendarDays,
-  HelpCircle,
-  Clock,
-  Layers,
-} from 'lucide-react';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import PrintIcon from '@mui/icons-material/Print';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import HelpOutlineIcon from '@mui/icons-material/Help';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ViewWeekIcon from '@mui/icons-material/ViewWeek';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import TextField from '@mui/material/TextField';
 import confetti from 'canvas-confetti';
 
 interface HeaderProps {
@@ -29,8 +37,6 @@ interface HeaderProps {
   canUndo: boolean;
   canRedo: boolean;
   onOpenTemplates: () => void;
-  onToggleDarkMode: () => void;
-  isDarkMode: boolean;
   onImportRoutine: (data: RoutineData) => void;
 }
 
@@ -42,14 +48,12 @@ export const Header: React.FC<HeaderProps> = ({
   canUndo,
   canRedo,
   onOpenTemplates,
-  onToggleDarkMode,
-  isDarkMode,
   onImportRoutine,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(routine.title);
   const [tempSubtitle, setTempSubtitle] = useState(routine.subtitle || '');
-  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
@@ -61,8 +65,8 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const handleExportPNG = async () => {
+    setExportAnchorEl(null);
     setIsExporting(true);
-    setShowExportMenu(false);
     const success = await exportTableAsImage(
       'routine-export-container',
       routine.title.toLowerCase().replace(/[^a-z0-9]/gi, '_') || 'routine'
@@ -78,12 +82,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const handlePrint = () => {
-    setShowExportMenu(false);
+    setExportAnchorEl(null);
     window.print();
   };
 
   const handleExportJSON = () => {
-    setShowExportMenu(false);
+    setExportAnchorEl(null);
     exportRoutineAsJSON(routine);
   };
 
@@ -111,279 +115,416 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="mb-6 space-y-4 no-print">
-      {/* Top Navbar Card: Floating Frosted Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 shadow-lg shadow-slate-200/40 dark:shadow-black/20">
+    <Box sx={{ mb: 3.5 }} className="no-print">
+      {/* Top Navbar */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 1.5, sm: 2 },
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #E5E0D6',
+          borderRadius: '18px',
+          mb: 2.5,
+          boxShadow: '0 2px 8px rgba(46,51,47,0.04)',
+        }}
+      >
         {/* Brand identity */}
-        <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/25 shrink-0 group">
-            <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" />
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-            </span>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-heading font-extrabold text-xl sm:text-2xl tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: '14px',
+              backgroundColor: '#5B7065',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              boxShadow: '0 2px 6px rgba(91,112,101,0.2)',
+            }}
+          >
+            <CalendarMonthIcon sx={{ fontSize: 24 }} />
+          </Box>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#2E332F', lineHeight: 1.2 }}>
                 RoutineCraft
-              </span>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                Client-Side
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block font-medium">
-              Interactive Timetable & Routine Planner • UI/UX Pro Max Engine
-            </p>
-          </div>
-        </div>
+              </Typography>
+              <Box
+                sx={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  px: 1,
+                  py: 0.2,
+                  borderRadius: '6px',
+                  backgroundColor: '#EAE6DF',
+                  color: '#4B534D',
+                }}
+              >
+                No Backend
+              </Box>
+            </Box>
+            <Typography variant="caption" sx={{ color: '#747C76', display: { xs: 'none', sm: 'block' } }}>
+              Cozy Timetable & Routine Creator
+            </Typography>
+          </Box>
+        </Box>
 
-        {/* Action Controls: Undo/Redo, Templates, Export, Theme, Help */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Undo & Redo with count & tooltip */}
-          <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700 p-0.5 bg-slate-50/80 dark:bg-slate-800/80 shadow-2xs">
-            <button
-              onClick={onUndo}
-              disabled={!canUndo}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                canUndo
-                  ? 'text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:text-indigo-600 shadow-2xs'
-                  : 'text-slate-300 dark:text-slate-600 cursor-not-allowed'
-              }`}
-              title="Undo (Ctrl+Z)"
-              aria-label="Undo change"
-            >
-              <Undo2 className="w-4 h-4" />
-            </button>
-            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700" />
-            <button
-              onClick={onRedo}
-              disabled={!canRedo}
-              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                canRedo
-                  ? 'text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:text-indigo-600 shadow-2xs'
-                  : 'text-slate-300 dark:text-slate-600 cursor-not-allowed'
-              }`}
-              title="Redo (Ctrl+Y)"
-              aria-label="Redo change"
-            >
-              <Redo2 className="w-4 h-4" />
-            </button>
-          </div>
+        {/* Action Controls */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+          {/* Undo & Redo */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#FAF8F5',
+              border: '1px solid #E5E0D6',
+              borderRadius: '12px',
+              p: 0.25,
+            }}
+          >
+            <Tooltip title="Undo (Ctrl+Z)" arrow>
+              <span>
+                <IconButton
+                  size="small"
+                  disabled={!canUndo}
+                  onClick={onUndo}
+                  sx={{ color: '#4A534C' }}
+                >
+                  <UndoIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Box sx={{ width: '1px', height: 16, backgroundColor: '#E5E0D6', my: 'auto' }} />
+            <Tooltip title="Redo (Ctrl+Y)" arrow>
+              <span>
+                <IconButton
+                  size="small"
+                  disabled={!canRedo}
+                  onClick={onRedo}
+                  sx={{ color: '#4A534C' }}
+                >
+                  <RedoIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
 
           {/* Templates Button */}
-          <button
+          <Button
+            variant="outlined"
+            startIcon={<AutoAwesomeIcon sx={{ color: '#B87352' }} />}
             onClick={onOpenTemplates}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/80 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 cursor-pointer shadow-xs"
+            sx={{
+              borderColor: '#E5E0D6',
+              color: '#2E332F',
+              fontSize: '13px',
+              '&:hover': { borderColor: '#B87352', backgroundColor: '#FAF4F0' },
+            }}
           >
-            <Sparkles className="w-4 h-4 text-indigo-500" />
-            <span>Templates</span>
-          </button>
+            Templates
+          </Button>
 
           {/* Export Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              disabled={isExporting}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs sm:text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-100 shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<FileDownloadIcon />}
+            onClick={(e) => setExportAnchorEl(e.currentTarget)}
+            sx={{
+              backgroundColor: '#2E332F',
+              color: '#FFFFFF',
+              fontWeight: 700,
+              fontSize: '13px',
+              '&:hover': { backgroundColor: '#444C46' },
+            }}
+          >
+            {isExporting ? 'Exporting...' : 'Export'}
+          </Button>
+
+          <Menu
+            anchorEl={exportAnchorEl}
+            open={Boolean(exportAnchorEl)}
+            onClose={() => setExportAnchorEl(null)}
+            slotProps={{
+              paper: {
+                sx: {
+                  borderRadius: '14px',
+                  border: '1px solid #E5E0D6',
+                  boxShadow: '0 8px 24px rgba(46,51,47,0.08)',
+                  minWidth: 200,
+                },
+              },
+            }}
+          >
+            <MenuItem onClick={handleExportPNG} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+              <ListItemIcon>
+                <ImageIcon sx={{ fontSize: 18, color: '#5B7065' }} />
+              </ListItemIcon>
+              <ListItemText primary="Download PNG Image" />
+            </MenuItem>
+            <MenuItem onClick={handlePrint} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+              <ListItemIcon>
+                <PrintIcon sx={{ fontSize: 18, color: '#5B7A8C' }} />
+              </ListItemIcon>
+              <ListItemText primary="Print / Save PDF" />
+            </MenuItem>
+            <Box sx={{ my: 0.5, borderTop: '1px solid #ECE7DE' }} />
+            <MenuItem onClick={handleExportJSON} sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}>
+              <ListItemIcon>
+                <DescriptionIcon sx={{ fontSize: 18, color: '#B87352' }} />
+              </ListItemIcon>
+              <ListItemText primary="Backup Data (JSON)" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setExportAnchorEl(null);
+                fileInputRef.current?.click();
+              }}
+              sx={{ py: 1, fontSize: '13px', color: '#2E332F' }}
             >
-              <Download className="w-4 h-4" />
-              <span>{isExporting ? 'Exporting...' : 'Export'}</span>
-            </button>
+              <ListItemIcon>
+                <FileUploadIcon sx={{ fontSize: 18, color: '#886F91' }} />
+              </ListItemIcon>
+              <ListItemText primary="Restore Data (JSON)" />
+            </MenuItem>
+          </Menu>
 
-            {showExportMenu && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowExportMenu(false)}
-                />
-                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs animate-in fade-in zoom-in-95 duration-150">
-                  <button
-                    onClick={handleExportPNG}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 text-left transition-colors font-semibold cursor-pointer"
-                  >
-                    <ImageIcon className="w-4 h-4 text-indigo-500" />
-                    <span>Download Image (.PNG)</span>
-                  </button>
-                  <button
-                    onClick={handlePrint}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 text-left transition-colors font-semibold cursor-pointer"
-                  >
-                    <Printer className="w-4 h-4 text-emerald-500" />
-                    <span>Print / Save as PDF</span>
-                  </button>
-                  <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
-                  <button
-                    onClick={handleExportJSON}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 text-left transition-colors font-semibold cursor-pointer"
-                  >
-                    <FileJson className="w-4 h-4 text-amber-500" />
-                    <span>Backup Data (.JSON)</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowExportMenu(false);
-                      fileInputRef.current?.click();
-                    }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-600 text-left transition-colors font-semibold cursor-pointer"
-                  >
-                    <Upload className="w-4 h-4 text-purple-500" />
-                    <span>Restore Data (.JSON)</span>
-                  </button>
-                </div>
-              </>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={handleImportFile}
-            />
-          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleImportFile}
+          />
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={onToggleDarkMode}
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-105 cursor-pointer shadow-2xs"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label="Toggle theme mode"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
-          </button>
+          {/* Help Button */}
+          <Tooltip title="Drag & Drop Rules" arrow>
+            <IconButton
+              onClick={() => setShowHelp(!showHelp)}
+              sx={{
+                border: '1px solid #E5E0D6',
+                backgroundColor: '#FAF8F5',
+                color: '#5B7065',
+                '&:hover': { backgroundColor: '#F0ECE4' },
+              }}
+            >
+              <HelpOutlineIcon sx={{ fontSize: 19 }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Paper>
 
-          {/* Quick Help Guide Button */}
-          <button
-            onClick={() => setShowHelp(!showHelp)}
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-105 cursor-pointer shadow-2xs"
-            title="Drag & Drop Rules & Tips"
-            aria-label="Show help tips"
-          >
-            <HelpCircle className="w-4 h-4 text-indigo-500" />
-          </button>
-        </div>
-      </div>
-
-      {/* Routine Title & Subtitle Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-indigo-50/90 via-purple-50/60 to-pink-50/40 dark:from-indigo-950/40 dark:via-purple-950/30 dark:to-pink-950/20 border border-indigo-100 dark:border-indigo-900/40 shadow-sm backdrop-blur-md">
+      {/* Routine Title Banner (Cozy solid tone, NO gradients) */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.5, sm: 3 },
+          backgroundColor: '#F5F1E8',
+          border: '1px solid #E6E0D4',
+          borderRadius: '18px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
         {isEditingTitle ? (
-          <div className="flex-1 space-y-2.5">
-            <input
-              type="text"
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <TextField
+              size="small"
+              fullWidth
               value={tempTitle}
               onChange={(e) => setTempTitle(e.target.value)}
-              className="w-full px-4 py-2 text-xl font-heading font-bold rounded-xl border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
               placeholder="Timetable Title"
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '10px',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                  },
+                },
+              }}
               autoFocus
             />
-            <input
-              type="text"
+            <TextField
+              size="small"
+              fullWidth
               value={tempSubtitle}
               onChange={(e) => setTempSubtitle(e.target.value)}
-              className="w-full px-4 py-1.5 text-xs rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
-              placeholder="Subtitle (e.g. Spring 2026 Semester, Team Focus, Habit Tracker)"
+              placeholder="Subtitle (e.g. Semester, department or project)"
+              slotProps={{
+                input: {
+                  sx: {
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                  },
+                },
+              }}
             />
-            <div className="flex items-center gap-2 pt-1">
-              <button
+            <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                startIcon={<CheckIcon />}
                 onClick={handleSaveTitle}
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                sx={{ backgroundColor: '#5B7065' }}
               >
-                <Check className="w-3.5 h-3.5" />
                 Save
-              </button>
-              <button
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<CloseIcon />}
                 onClick={() => {
                   setTempTitle(routine.title);
                   setTempSubtitle(routine.subtitle || '');
                   setIsEditingTitle(false);
                 }}
-                className="px-4 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-300 transition-colors cursor-pointer"
+                sx={{ borderColor: '#D8D2C7', color: '#68726A' }}
               >
                 Cancel
-              </button>
-            </div>
-          </div>
+              </Button>
+            </Box>
+          </Box>
         ) : (
-          <div
+          <Box
             onClick={() => {
               setTempTitle(routine.title);
               setTempSubtitle(routine.subtitle || '');
               setIsEditingTitle(true);
             }}
-            className="group cursor-pointer flex-1"
+            sx={{ cursor: 'pointer', flex: 1, '&:hover .edit-icon': { opacity: 1 } }}
           >
-            <div className="flex items-center gap-2.5">
-              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#2E332F', letterSpacing: '-0.01em' }}>
                 {routine.title}
-              </h1>
-              <span className="p-1 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Edit2 className="w-3.5 h-3.5" />
-              </span>
-            </div>
+              </Typography>
+              <EditIcon
+                className="edit-icon"
+                sx={{
+                  fontSize: 16,
+                  color: '#5B7065',
+                  opacity: 0,
+                  transition: 'opacity 0.15s ease',
+                }}
+              />
+            </Box>
             {routine.subtitle && (
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+              <Typography variant="body2" sx={{ color: '#68726A', mt: 0.5, fontWeight: 500 }}>
                 {routine.subtitle}
-              </p>
+              </Typography>
             )}
-          </div>
+          </Box>
         )}
 
-        {/* Layout status & KPI chips */}
-        <div className="flex flex-col sm:items-end gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-2xs font-bold text-slate-800 dark:text-slate-200">
-              <Clock className="w-3 h-3 text-indigo-500" />
-              Upper Row: Time
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-2xs font-bold text-indigo-700 dark:text-indigo-300">
-              <Layers className="w-3 h-3 text-purple-500" />
-              Rightmost Column: Days
-            </span>
-          </div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-            {routine.days.length} Days • {routine.timeSlots.length} Slots • {routine.items.length} Active Events
-          </div>
-        </div>
-      </div>
+        {/* Status badges */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'flex-start', sm: 'flex-end' }, gap: 0.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1.25,
+                py: 0.35,
+                borderRadius: '8px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E0D6',
+                color: '#2E332F',
+                fontSize: '11px',
+                fontWeight: 700,
+              }}
+            >
+              <AccessTimeIcon sx={{ fontSize: 13, color: '#5B7065' }} />
+              <span>Upper Row: Time</span>
+            </Box>
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5,
+                px: 1.25,
+                py: 0.35,
+                borderRadius: '8px',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E5E0D6',
+                color: '#2E332F',
+                fontSize: '11px',
+                fontWeight: 700,
+              }}
+            >
+              <ViewWeekIcon sx={{ fontSize: 13, color: '#B87352' }} />
+              <span>Rightmost Column: Days</span>
+            </Box>
+          </Box>
+          <Typography variant="caption" sx={{ color: '#7E8780', fontFamily: '"JetBrains Mono", monospace' }}>
+            {routine.days.length} Days • {routine.timeSlots.length} Time Slots • {routine.items.length} Activities
+          </Typography>
+        </Box>
+      </Paper>
 
       {/* Interactive Rules & Drag-and-Drop Help Card */}
       {showHelp && (
-        <div className="p-5 rounded-2xl sm:rounded-3xl bg-indigo-50/90 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-950 dark:text-indigo-100 animate-in fade-in slide-in-from-top-2 duration-200 shadow-md">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-heading font-bold flex items-center gap-2 text-sm sm:text-base text-indigo-900 dark:text-indigo-200">
-              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              Interactive Drag & Drop + Keyboard Rules:
-            </h4>
-            <button
-              onClick={() => setShowHelp(false)}
-              className="p-1 rounded-lg text-indigo-500 hover:text-indigo-800 dark:hover:text-indigo-200 cursor-pointer"
-            >
-              ✕
-            </button>
-          </div>
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <li className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-              <strong className="block text-indigo-700 dark:text-indigo-300 font-bold mb-1 text-sm">
-                ↔ Time Headers
-              </strong>
-              Drag time headers along the top row to swap columns (time slots only swap with time slots), or click the left/right arrow buttons!
-            </li>
-            <li className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-              <strong className="block text-indigo-700 dark:text-indigo-300 font-bold mb-1 text-sm">
-                ↕ Day Headers
-              </strong>
-              Drag day headers along the right column to swap rows (days only swap with days), or click the up/down arrow buttons!
-            </li>
-            <li className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/60 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-              <strong className="block text-indigo-700 dark:text-indigo-300 font-bold mb-1 text-sm">
-                ✥ Routine Events
-              </strong>
-              Drag any event card freely to empty slots or drop onto another card to swap positions anywhere across the timetable!
-            </li>
-          </ul>
-        </div>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2.5,
+            mt: 2,
+            backgroundColor: '#FAF5EE',
+            border: '1px solid #EAE0D0',
+            borderRadius: '16px',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#2E332F' }}>
+              Drag & Drop Guidelines:
+            </Typography>
+            <IconButton size="small" onClick={() => setShowHelp(false)}>
+              <CloseIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+              gap: 2,
+              fontSize: '12.5px',
+              color: '#4B534D',
+            }}
+          >
+            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#5B7065', display: 'block', mb: 0.5 }}>
+                Time Slots (Upper Row)
+              </Typography>
+              Drag time headers horizontally to swap columns, or use the left/right arrow buttons. Only swaps with other time slots.
+            </Box>
+            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#B87352', display: 'block', mb: 0.5 }}>
+                Days (Rightmost Column)
+              </Typography>
+              Drag day headers vertically to swap day rows, or use the up/down arrow buttons. Only swaps with other days.
+            </Box>
+            <Box sx={{ p: 1.5, backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAE0D0' }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, color: '#5B7A8C', display: 'block', mb: 0.5 }}>
+                Routine Events
+              </Typography>
+              Drag any event card freely to empty slots or drop on another card to swap positions anywhere on the routine grid.
+            </Box>
+          </Box>
+        </Paper>
       )}
-    </header>
+    </Box>
   );
 };
